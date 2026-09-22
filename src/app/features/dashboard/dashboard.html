@@ -1,0 +1,248 @@
+<mat-sidenav-container class="layout">
+
+  <mat-sidenav mode="side" opened class="sidebar">
+
+    <div class="brand">
+      <mat-icon>hotel</mat-icon>
+
+      <span>HMS Sirius</span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <nav class="navigation">
+
+      <a
+        mat-list-item
+        routerLink="/dashboard"
+        class="navigation-item active"
+      >
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+
+      <a mat-list-item routerLink="/reservations" class="navigation-item">
+        <mat-icon matListItemIcon>event</mat-icon>
+        <span matListItemTitle>Reservations</span>
+      </a>
+
+      <a mat-list-item routerLink="/rooms" class="navigation-item">
+        <mat-icon matListItemIcon>meeting_room</mat-icon>
+        <span matListItemTitle>Rooms</span>
+      </a>
+
+      <a mat-list-item routerLink="/guests" class="navigation-item">
+        <mat-icon matListItemIcon>people</mat-icon>
+        <span matListItemTitle>Guests</span>
+      </a>
+
+      <a mat-list-item routerLink="/rates" class="navigation-item">
+        <mat-icon matListItemIcon>sell</mat-icon>
+        <span matListItemTitle>Rates</span>
+      </a>
+
+      <a mat-list-item routerLink="/prices" class="navigation-item">
+        <mat-icon matListItemIcon>payments</mat-icon>
+        <span matListItemTitle>Prices</span>
+      </a>
+
+      <a mat-list-item routerLink="/folios" class="navigation-item">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <span matListItemTitle>Folios</span>
+      </a>
+
+      <a mat-list-item routerLink="/payments" class="navigation-item">
+        <mat-icon matListItemIcon>account_balance_wallet</mat-icon>
+        <span matListItemTitle>Payments</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <button mat-button class="logout-button">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+
+    <mat-toolbar class="toolbar">
+
+      <div class="toolbar-title">
+        <span>Dashboard</span>
+      </div>
+
+      <span class="toolbar-spacer"></span>
+
+      <button mat-icon-button>
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <button mat-button class="user-button">
+        <mat-icon>account_circle</mat-icon>
+        <span>Administrator</span>
+      </button>
+
+    </mat-toolbar>
+
+    <main class="content">
+
+      <div class="page-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Hotel overview and today's activity</p>
+        </div>
+      </div>
+
+      <section class="stats">
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>meeting_room</mat-icon>
+            </div>
+
+            <div class="stat-info">
+              <span class="stat-label">Available Rooms</span>
+              <strong>24</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>event_available</mat-icon>
+            </div>
+
+            <div class="stat-info">
+              <span class="stat-label">Arrivals Today</span>
+              <strong>8</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>event_busy</mat-icon>
+            </div>
+
+            <div class="stat-info">
+              <span class="stat-label">Departures Today</span>
+              <strong>6</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>percent</mat-icon>
+            </div>
+
+            <div class="stat-info">
+              <span class="stat-label">Occupancy</span>
+              <strong>72%</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </section>
+
+      <section class="dashboard-grid">
+
+        <mat-card class="activity-card">
+
+          <mat-card-header>
+            <mat-card-title>Recent Reservations</mat-card-title>
+            <mat-card-subtitle>Latest hotel bookings</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <div class="reservation-row">
+              <div>
+                <strong>John Smith</strong>
+                <span>Room 203 · Superior</span>
+              </div>
+
+              <mat-chip>CONFIRMED</mat-chip>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="reservation-row">
+              <div>
+                <strong>Anna Wilson</strong>
+                <span>Room 301 · Junior Suite</span>
+              </div>
+
+              <mat-chip>CONFIRMED</mat-chip>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="reservation-row">
+              <div>
+                <strong>Michael Brown</strong>
+                <span>Room 404 · Kozyn Corner</span>
+              </div>
+
+              <mat-chip>CHECKED_IN</mat-chip>
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+
+        <mat-card class="activity-card">
+
+          <mat-card-header>
+            <mat-card-title>Today's Activity</mat-card-title>
+            <mat-card-subtitle>Hotel operations</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+
+            <div class="activity-item">
+              <mat-icon>login</mat-icon>
+
+              <div>
+                <strong>8 arrivals</strong>
+                <span>Guests expected today</span>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <mat-icon>logout</mat-icon>
+
+              <div>
+                <strong>6 departures</strong>
+                <span>Guests checking out today</span>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <mat-icon>hotel</mat-icon>
+
+              <div>
+                <strong>24 rooms</strong>
+                <span>Currently available</span>
+              </div>
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+
+      </section>
+
+    </main>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

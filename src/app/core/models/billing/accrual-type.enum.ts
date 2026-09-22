@@ -1,0 +1,9 @@
+export enum AccrualType {
+  ROOM = 'ROOM',
+  BREAKFAST = 'BREAKFAST',
+  SERVICE = 'SERVICE',
+  MINIBAR = 'MINIBAR',
+  LAUNDRY = 'LAUNDRY',
+  PARKING = 'PARKING',
+  OTHER = 'OTHER'
+}

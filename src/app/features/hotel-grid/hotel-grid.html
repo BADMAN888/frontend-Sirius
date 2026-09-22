@@ -1,0 +1,137 @@
+<div class="hotel-grid-page">
+
+  <header class="page-header">
+    <div>
+      <h1>Hotel Grid</h1>
+      <p>Olga Grand Hotel</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="today-button">
+        Today
+      </button>
+
+      <button class="primary-button">
+        + New Reservation
+      </button>
+    </div>
+  </header>
+
+  @if (loading) {
+    <div class="state">
+      Loading hotel grid...
+    </div>
+  } @else if (error) {
+    <div class="state error">
+      {{ error }}
+    </div>
+  } @else {
+
+    <section class="toolbar">
+
+      <div class="category-filter">
+
+        <button
+          [class.active]="selectedCategory === 'ALL'"
+          (click)="selectCategory('ALL')">
+          All Rooms
+        </button>
+
+        @for (category of categories; track category) {
+          <button
+            [class.active]="selectedCategory === category"
+            (click)="selectCategory(category)">
+            {{ category }}
+          </button>
+        }
+
+      </div>
+
+      <div class="legend">
+        <span>
+          <i class="legend-dot available"></i>
+          Available
+        </span>
+
+        <span>
+          <i class="legend-dot confirmed"></i>
+          Confirmed
+        </span>
+
+        <span>
+          <i class="legend-dot checked-in"></i>
+          Checked in
+        </span>
+      </div>
+
+    </section>
+
+    <section class="grid-wrapper">
+
+      <div class="grid">
+
+        <div class="corner-header">
+          <span>Room</span>
+          <small>Category</small>
+        </div>
+
+        @for (date of dates; track date.iso) {
+          <div class="date-header">
+            <span>{{ date.weekday }}</span>
+            <strong>{{ date.day }}</strong>
+          </div>
+        }
+
+        @for (room of filteredRooms; track room.id) {
+
+          <div class="room-header">
+            <strong>{{ room.roomNumber }}</strong>
+            <span>{{ getCategoryName(room.categoryId) }}</span>
+          </div>
+
+          @for (date of dates; track date.iso) {
+
+            @let booking = getBooking(room.id, date.iso);
+
+            <div
+              class="grid-cell"
+              [class.booked]="booking"
+              [class.checked-in]="booking?.status === 'CHECKED_IN'"
+              [class.check-in]="isCheckIn(room.id, date.iso)"
+              [class.check-out]="isCheckOut(room.id, date.iso)"
+              (click)="onCellClick(room, date)">
+
+              @if (booking) {
+
+                <div class="reservation">
+                  <strong>
+                    {{ getGuestName(booking) }}
+                  </strong>
+
+                  <span>
+                    {{ booking.status }}
+                  </span>
+
+                </div>
+
+              } @else {
+
+                <span class="available-label">
+                  Available
+                </span>
+
+              }
+
+            </div>
+
+          }
+
+        }
+
+      </div>
+
+    </section>
+
+  }
+
+</div>
