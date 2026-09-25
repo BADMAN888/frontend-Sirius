@@ -1,30 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface ReservationGuest {
-  id: number;
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-  phoneNumber?: string;
-  email?: string;
-}
-
-export interface ReservationResponse {
-  id: number;
-  confirmationNumber: string;
-  roomId: number;
-  guests: ReservationGuest[];
-  checkInDate: string;
-  checkOutDate: string;
-  adults: number;
-  children: number;
-  status: string;
-  comments?: string[];
-  createdAt: string;
-  folioId?: number;
-}
+import { Reservation } from '../models/reservation/reservation.model';
+import { ReservationRequest } from '../models/reservation/reservation-request.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,12 +11,12 @@ export class ReservationService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:8080/api/reservations';
 
-  getAll(): Observable<ReservationResponse[]> {
-    return this.http.get<ReservationResponse[]>(this.apiUrl);
+  getAll(): Observable<Reservation[]> {
+    return this.http.get<Reservation[]>(this.apiUrl);
   }
 
-  getById(id: number): Observable<ReservationResponse> {
-    return this.http.get<ReservationResponse>(
+  getById(id: number): Observable<Reservation> {
+    return this.http.get<Reservation>(
       `${this.apiUrl}/${id}`
     );
   }
@@ -46,8 +24,8 @@ export class ReservationService {
   getByDateRange(
     startDate: string,
     endDate: string
-  ): Observable<ReservationResponse[]> {
-    return this.http.get<ReservationResponse[]>(
+  ): Observable<Reservation[]> {
+    return this.http.get<Reservation[]>(
       `${this.apiUrl}/by-date-range`,
       {
         params: {
@@ -55,6 +33,29 @@ export class ReservationService {
           endDate
         }
       }
+    );
+  }
+
+  create(request: ReservationRequest): Observable<Reservation> {
+    return this.http.post<Reservation>(
+      this.apiUrl,
+      request
+    );
+  }
+
+  update(
+    id: number,
+    request: ReservationRequest
+  ): Observable<Reservation> {
+    return this.http.put<Reservation>(
+      `${this.apiUrl}/${id}`,
+      request
+    );
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${id}`
     );
   }
 }

@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HotelGrid } from './hotel-grid';
+import { HotelService } from '../../core/services/hotel.service';
+import { RoomCategoryService } from '../../core/services/room-category.service';
+import { RoomService } from '../../core/services/room.service';
+import { ReservationService } from '../../core/services/reservation.service';
+import { of } from 'rxjs';
 
 describe('HotelGrid', () => {
   let component: HotelGrid;
@@ -7,7 +12,41 @@ describe('HotelGrid', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HotelGrid]
+      imports: [HotelGrid],
+      providers: [
+        {
+          provide: HotelService,
+          useValue: {
+            getById: () => of({
+              id: 1,
+              hotelName: 'Olga Grand Hotel',
+              address: '',
+              email: '',
+              phone: '',
+              checkInTime: '14:00:00',
+              checkOutTime: '12:00:00'
+            })
+          }
+        },
+        {
+          provide: RoomCategoryService,
+          useValue: {
+            getByHotelId: () => of([])
+          }
+        },
+        {
+          provide: RoomService,
+          useValue: {
+            getByHotelId: () => of([])
+          }
+        },
+        {
+          provide: ReservationService,
+          useValue: {
+            getAll: () => of([])
+          }
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HotelGrid);
@@ -19,31 +58,29 @@ describe('HotelGrid', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should contain hotel rooms', () => {
-    expect(component.rooms.length).toBe(19);
-  });
-
-  it('should contain seven dates', () => {
+  it('should initialize seven dates', () => {
     expect(component.dates.length).toBe(7);
   });
 
-  it('should find reservation for occupied room and date', () => {
-    const booking = component.getBooking(101, '2026-09-23');
-
-    expect(booking).toBeTruthy();
-    expect(booking?.guestName).toBe('John Smith');
+  it('should load hotel data', () => {
+    expect(component.hotel?.hotelName).toBe('Olga Grand Hotel');
   });
 
-  it('should return null for available room and date', () => {
-    const booking = component.getBooking(101, '2026-09-26');
+  it('should return all rooms when category is not selected', () => {
+    component.rooms = [
+      {
+        id: 1,
+        roomNumber: '101',
+        floor: 1,
+        status: 'AVAILABLE' as never,
+        roomView: 'CITY' as never,
+        hotelId: 1,
+        categoryId: 1
+      }
+    ];
 
-    expect(booking).toBeNull();
-  });
+    component.selectCategory(null);
 
-  it('should filter rooms by category', () => {
-    component.selectCategory('Standard');
-
-    expect(component.filteredRooms.length).toBe(5);
-    expect(component.filteredRooms.every(room => room.category === 'Standard')).toBeTruthy();;
+    expect(component.filteredRooms.length).toBe(1);
   });
 });
