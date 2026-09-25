@@ -1,245 +1,62 @@
 <div class="hotel-grid-page">
 
-  <header class="page-header">
-
-    <div class="hotel-info">
-      <span class="eyebrow">HOTEL MANAGEMENT SYSTEM</span>
-      <h1>{{ hotel?.hotelName ?? 'Hotel' }}</h1>
+  <div class="grid-header">
+    <div>
+      <h1>Hotel Grid</h1>
+      <p>Room availability</p>
     </div>
 
-    <div class="period-navigation">
-
-      <button
-        type="button"
-        class="navigation-button"
-        (click)="previousPeriod()">
-        ‹
-      </button>
-
-      <button
-        type="button"
-        class="today-button"
-        (click)="today()">
-        Today
-      </button>
-
-      <button
-        type="button"
-        class="navigation-button"
-        (click)="nextPeriod()">
-        ›
-      </button>
-
-      <button
-        type="button"
-        class="new-reservation-button">
-        + New Reservation
-      </button>
-
+    <div class="grid-period">
+      <span>{{ days[0].date | date:'dd MMM yyyy' }}</span>
+      <span>—</span>
+      <span>{{ days[30].date | date:'dd MMM yyyy' }}</span>
     </div>
+  </div>
 
-  </header>
+  <div class="grid-wrapper">
 
-  @if (loading) {
+    <div class="hotel-grid">
 
-    <div class="state">
-      Loading hotel grid...
-    </div>
-
-  } @else if (error) {
-
-    <div class="state error">
-      {{ error }}
-    </div>
-
-  } @else {
-
-    <section class="toolbar">
-
-      <div class="category-filter">
-
-        <button
-          type="button"
-          [class.active]="selectedCategoryId === null"
-          (click)="selectCategory(null)">
-          All Rooms
-        </button>
-
-        @for (category of categories; track category.id) {
-
-          <button
-            type="button"
-            [class.active]="selectedCategoryId === category.id"
-            (click)="selectCategory(category.id)">
-            {{ category.name }}
-          </button>
-
-        }
-
+      <div class="corner-cell">
+        <span>ROOM</span>
       </div>
 
-      <div class="legend">
+      @for (day of days; track day.date.getTime()) {
+        <div
+          class="day-header"
+          [class.today]="day.isToday"
+          [class.weekend]="day.isWeekend"
+        >
+          <span class="weekday">{{ day.weekday }}</span>
+          <span class="day-number">{{ day.day }}</span>
+        </div>
+      }
 
-        <span>
-          <i class="legend-color reserved"></i>
-          Reserved
-        </span>
+      @for (room of rooms; track room.roomNumber) {
 
-        <span>
-          <i class="legend-color confirmed"></i>
-          Confirmed
-        </span>
-
-        <span>
-          <i class="legend-color checked-in"></i>
-          Checked in
-        </span>
-
-        <span>
-          <i class="legend-color completed"></i>
-          Completed
-        </span>
-
-      </div>
-
-    </section>
-
-    <section class="grid-wrapper">
-
-      <div class="grid">
-
-        <div class="grid-header">
-
-          <div class="room-header-title">
-            <span>ROOM</span>
-            <small>CATEGORY</small>
+        <div class="room-cell">
+          <div class="room-number">
+            {{ room.roomNumber }}
           </div>
 
-          @for (date of dates; track date.iso) {
-
-            <div
-              class="date-header"
-              [class.today]="date.isToday">
-
-              <span>{{ date.weekday }}</span>
-
-              <strong>{{ date.day }}</strong>
-
-            </div>
-
-          }
-
+          <div class="room-category">
+            {{ room.category }}
+          </div>
         </div>
 
-        @for (category of visibleCategories; track category.id) {
-
-          @if (getRoomsForCategory(category.id).length > 0) {
-
-            <div class="category-row">
-
-              <span>
-                {{ category.name }}
-              </span>
-
-              <small>
-                {{ getRoomsForCategory(category.id).length }}
-                rooms
-              </small>
-
-            </div>
-
-            @for (
-                room of getRoomsForCategory(category.id);
-              track room.id
-              ) {
-
-              <div class="room-row">
-
-                <div class="room-info">
-
-                  <strong>
-                    {{ room.roomNumber }}
-                  </strong>
-
-                  <span>
-                    Floor {{ room.floor }}
-                  </span>
-
-                </div>
-
-                <div class="room-timeline">
-
-                  @for (date of dates; track date.iso) {
-
-                    <div
-                      class="day-cell"
-                      [class.today]="date.isToday"
-                      (click)="onCellClick(room, date)">
-                    </div>
-
-                  }
-
-                  @for (
-                      reservation of getVisibleReservations(room.id);
-                    track reservation.id
-                    ) {
-
-                    <div
-                      class="reservation-block"
-                      [class]="getReservationStatusClass(reservation)"
-                      [style.grid-column]="getReservationColumn(reservation)"
-                      (click)="onReservationClick(reservation); $event.stopPropagation()">
-
-                      <div class="reservation-content">
-
-                        <strong>
-                          {{ getReservationLabel(reservation) }}
-                        </strong>
-
-                        <span>
-                          {{ reservation.adults }}
-                          adults
-                          @if (reservation.children > 0) {
-                            · {{ reservation.children }} children
-                          }
-                        </span>
-
-                      </div>
-
-                      @if (isReservationCheckInVisible(reservation)) {
-
-                        <span class="check-in-marker">
-                          {{ reservation.checkInDate }}
-                        </span>
-
-                      }
-
-                      @if (isReservationCheckOutVisible(reservation)) {
-
-                        <span class="check-out-marker">
-                          {{ reservation.checkOutDate }}
-                        </span>
-
-                      }
-
-                    </div>
-
-                  }
-
-                </div>
-
-              </div>
-
-            }
-
-          }
-
+        @for (day of days; track day.date.getTime()) {
+          <div
+            class="room-day"
+            [class.today]="day.isToday"
+            [class.weekend]="day.isWeekend"
+          >
+          </div>
         }
 
-      </div>
+      }
 
-    </section>
+    </div>
 
-  }
+  </div>
 
 </div>
