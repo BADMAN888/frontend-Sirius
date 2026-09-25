@@ -39,8 +39,9 @@
         mat-flat-button
         type="submit"
         class="login-button"
+        [disabled]="isLoading"
       >
-        Login
+        {{ isLoading ? 'Signing in...' : 'Login' }}
       </button>
 
     </form>

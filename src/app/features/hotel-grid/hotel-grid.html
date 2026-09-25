@@ -1,62 +1,161 @@
 <div class="hotel-grid-page">
 
   <div class="grid-header">
+
     <div>
       <h1>Hotel Grid</h1>
-      <p>Room availability</p>
+      <p>Room availability and reservations</p>
     </div>
 
     <div class="grid-period">
-      <span>{{ days[0].date | date:'dd MMM yyyy' }}</span>
+      <span>
+        {{ days[0] | date:'dd MMM yyyy' }}
+      </span>
+
       <span>—</span>
-      <span>{{ days[30].date | date:'dd MMM yyyy' }}</span>
+
+      <span>
+        {{ days[30] | date:'dd MMM yyyy' }}
+      </span>
     </div>
+
   </div>
 
-  <div class="grid-wrapper">
+  @if (loading) {
 
-    <div class="hotel-grid">
+    <div class="state-message">
+      Loading hotel grid...
+    </div>
 
-      <div class="corner-cell">
-        <span>ROOM</span>
-      </div>
+  } @else if (error) {
 
-      @for (day of days; track day.date.getTime()) {
-        <div
-          class="day-header"
-          [class.today]="day.isToday"
-          [class.weekend]="day.isWeekend"
-        >
-          <span class="weekday">{{ day.weekday }}</span>
-          <span class="day-number">{{ day.day }}</span>
+    <div class="state-message error">
+      {{ error }}
+    </div>
+
+  } @else {
+
+    <div class="grid-wrapper">
+
+      <div class="hotel-grid">
+
+        <div class="grid-header-row">
+
+          <div class="corner-cell">
+            ROOM
+          </div>
+
+          @for (
+              day of days;
+            track day.getTime()
+            ) {
+
+            <div
+              class="day-header"
+              [class.today]="isToday(day)"
+            >
+
+              <span class="weekday">
+                {{ day | date:'EEE' }}
+              </span>
+
+              <span class="day-number">
+                {{ day | date:'dd' }}
+              </span>
+
+              <span class="month">
+                {{ day | date:'MMM' }}
+              </span>
+
+            </div>
+
+          }
+
         </div>
-      }
 
-      @for (room of rooms; track room.roomNumber) {
+        @for (
+            room of rooms;
+          track room.id
+          ) {
 
-        <div class="room-cell">
-          <div class="room-number">
-            {{ room.roomNumber }}
+          <div class="room-row">
+
+            <div class="room-cell">
+
+              <div class="room-number">
+                {{ room.roomNumber }}
+              </div>
+
+              <div class="room-category">
+                Category {{ room.categoryId }}
+              </div>
+
+            </div>
+
+            @for (
+                day of days;
+              track day.getTime()
+              ) {
+
+              <div
+                class="room-day"
+                [class.today]="isToday(day)"
+              ></div>
+
+            }
+
+            @for (
+                reservation of getReservationsForRoom(room);
+              track reservation.id
+              ) {
+
+              <div
+                class="reservation"
+                [style.left.px]="
+                  getReservationLeft(reservation)
+                "
+                [style.width.px]="
+                  getReservationWidth(reservation)
+                "
+                [attr.title]="
+                  getReservationLabel(reservation)
+                "
+              >
+
+                <div class="reservation-confirmation">
+                  {{ reservation.confirmationNumber }}
+                </div>
+
+                <div class="reservation-dates">
+                  {{ reservation.checkInDate }}
+                  →
+                  {{ reservation.checkOutDate }}
+                </div>
+
+                <div class="reservation-status">
+                  {{ reservation.status }}
+                </div>
+
+              </div>
+
+            }
+
           </div>
 
-          <div class="room-category">
-            {{ room.category }}
-          </div>
-        </div>
-
-        @for (day of days; track day.date.getTime()) {
-          <div
-            class="room-day"
-            [class.today]="day.isToday"
-            [class.weekend]="day.isWeekend"
-          >
-          </div>
         }
 
-      }
+        @if (rooms.length === 0) {
+
+          <div class="empty-state">
+            No rooms found.
+          </div>
+
+        }
+
+      </div>
 
     </div>
 
-  </div>
+  }
 
 </div>

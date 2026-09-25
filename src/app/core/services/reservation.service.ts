@@ -26,7 +26,7 @@ export class ReservationService {
     endDate: string
   ): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(
-      `${this.apiUrl}/by-date-range`,
+      `${this.apiUrl}/date-range`,
       {
         params: {
           startDate,

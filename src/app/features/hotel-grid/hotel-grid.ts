@@ -1,19 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
-
-interface HotelRoom {
-  roomNumber: string;
-  floor: number;
-  category: string;
-}
-
-interface HotelDay {
-  date: Date;
-  day: number;
-  weekday: string;
-  isToday: boolean;
-  isWeekend: boolean;
-}
+import { Component, OnInit, inject } from '@angular/core';
+import { HotelGridService } from '../../core/services/hotel-grid.service';
+import { HotelGridRoom } from '../../core/models/hotel-grid/hotel-grid-room.model';
+import { HotelGridReservation } from '../../core/models/hotel-grid/hotel-grid-reservation.model';
 
 @Component({
   selector: 'app-hotel-grid',
@@ -22,57 +11,224 @@ interface HotelDay {
   templateUrl: './hotel-grid.html',
   styleUrl: './hotel-grid.scss'
 })
-export class HotelGrid {
-  readonly days: HotelDay[] = this.createDays();
+export class HotelGrid implements OnInit {
+  private readonly hotelGridService =
+    inject(HotelGridService);
 
-  readonly rooms: HotelRoom[] = [
-    { roomNumber: '101', floor: 1, category: 'Standard' },
-    { roomNumber: '102', floor: 1, category: 'Standard' },
-    { roomNumber: '103', floor: 1, category: 'Standard' },
-    { roomNumber: '104', floor: 1, category: 'Standard' },
-    { roomNumber: '105', floor: 1, category: 'Standard' },
+  readonly dayWidth = 92;
+  readonly roomColumnWidth = 150;
+  readonly numberOfDays = 31;
 
-    { roomNumber: '201', floor: 2, category: 'Superior' },
-    { roomNumber: '202', floor: 2, category: 'Superior' },
-    { roomNumber: '203', floor: 2, category: 'Superior' },
-    { roomNumber: '204', floor: 2, category: 'Superior' },
-    { roomNumber: '205', floor: 2, category: 'Superior' },
+  days: Date[] = [];
+  rooms: HotelGridRoom[] = [];
 
-    { roomNumber: '301', floor: 3, category: 'Junior Suite' },
-    { roomNumber: '302', floor: 3, category: 'Junior Suite' },
-    { roomNumber: '303', floor: 3, category: 'Junior Suite' },
-    { roomNumber: '304', floor: 3, category: 'Suite' },
-    { roomNumber: '305', floor: 3, category: 'Suite' },
+  loading = true;
+  error = '';
 
-    { roomNumber: '401', floor: 4, category: 'Suite' },
-    { roomNumber: '402', floor: 4, category: 'Suite' },
-    { roomNumber: '403', floor: 4, category: 'Suite' },
-    { roomNumber: '404', floor: 4, category: 'Kozyn Corner' }
-  ];
+  private gridStart!: Date;
+  private gridEnd!: Date;
 
-  private createDays(): HotelDay[] {
-    const result: HotelDay[] = [];
+  ngOnInit(): void {
+    this.initializeDays();
+    this.loadGrid();
+  }
+
+  private initializeDays(): void {
     const today = new Date();
 
-    today.setHours(0, 0, 0, 0);
+    this.gridStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
-    for (let i = 0; i < 31; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
+    this.gridEnd = this.addDays(
+      this.gridStart,
+      this.numberOfDays
+    );
 
-      const dayOfWeek = date.getDay();
+    this.days = Array.from(
+      { length: this.numberOfDays },
+      (_, index) =>
+        this.addDays(this.gridStart, index)
+    );
+  }
 
-      result.push({
-        date,
-        day: date.getDate(),
-        weekday: date.toLocaleDateString('en-US', {
-          weekday: 'short'
-        }),
-        isToday: i === 0,
-        isWeekend: dayOfWeek === 0 || dayOfWeek === 6
+  private loadGrid(): void {
+    this.loading = true;
+    this.error = '';
+
+    const startDate =
+      this.formatDate(this.gridStart);
+
+    const endDate =
+      this.formatDate(this.gridEnd);
+
+    this.hotelGridService
+      .getGrid(startDate, endDate)
+      .subscribe({
+        next: response => {
+          this.rooms = response.rooms;
+          this.loading = false;
+        },
+        error: error => {
+          console.error(
+            'Hotel grid error:',
+            error
+          );
+
+          this.error =
+            error?.error?.message ||
+            error?.message ||
+            `Failed to load hotel grid. HTTP ${error?.status || ''}`;
+
+          this.loading = false;
+        }
       });
-    }
+  }
+
+  getReservationsForRoom(
+    room: HotelGridRoom
+  ): HotelGridReservation[] {
+    return room.reservations;
+  }
+
+  getReservationLeft(
+    reservation: HotelGridReservation
+  ): number {
+    const checkIn =
+      this.parseDate(reservation.checkInDate);
+
+    const visibleStart =
+      checkIn < this.gridStart
+        ? this.gridStart
+        : checkIn;
+
+    const offset =
+      this.getDaysBetween(
+        this.gridStart,
+        visibleStart
+      );
+
+    return (
+      this.roomColumnWidth +
+      offset * this.dayWidth
+    );
+  }
+
+  getReservationWidth(
+    reservation: HotelGridReservation
+  ): number {
+    const checkIn =
+      this.parseDate(reservation.checkInDate);
+
+    const checkOut =
+      this.parseDate(reservation.checkOutDate);
+
+    const visibleStart =
+      checkIn < this.gridStart
+        ? this.gridStart
+        : checkIn;
+
+    const visibleEnd =
+      checkOut > this.gridEnd
+        ? this.gridEnd
+        : checkOut;
+
+    const visibleNights =
+      this.getDaysBetween(
+        visibleStart,
+        visibleEnd
+      );
+
+    return Math.max(
+      this.dayWidth - 6,
+      visibleNights * this.dayWidth - 6
+    );
+  }
+
+  getReservationLabel(
+    reservation: HotelGridReservation
+  ): string {
+    return `${reservation.confirmationNumber} · ${reservation.status}`;
+  }
+
+  isToday(day: Date): boolean {
+    return (
+      this.formatDate(day) ===
+      this.formatDate(new Date())
+    );
+  }
+
+  private addDays(
+    date: Date,
+    days: number
+  ): Date {
+    const result = new Date(date);
+    result.setDate(
+      result.getDate() + days
+    );
 
     return result;
+  }
+
+  private getDaysBetween(
+    start: Date,
+    end: Date
+  ): number {
+    const startUtc = Date.UTC(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate()
+    );
+
+    const endUtc = Date.UTC(
+      end.getFullYear(),
+      end.getMonth(),
+      end.getDate()
+    );
+
+    return Math.round(
+      (endUtc - startUtc) /
+      (1000 * 60 * 60 * 24)
+    );
+  }
+
+  private parseDate(
+    value: string
+  ): Date {
+    const [
+      year,
+      month,
+      day
+    ] = value
+      .substring(0, 10)
+      .split('-')
+      .map(Number);
+
+    return new Date(
+      year,
+      month - 1,
+      day
+    );
+  }
+
+  private formatDate(
+    date: Date
+  ): string {
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, '0');
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }

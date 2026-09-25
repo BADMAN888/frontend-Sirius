@@ -4,7 +4,6 @@
 
     <div class="brand">
       <mat-icon>hotel</mat-icon>
-
       <span>HMS Sirius</span>
     </div>
 
@@ -15,43 +14,90 @@
       <a
         mat-list-item
         routerLink="/dashboard"
-        class="navigation-item active"
+        class="navigation-item"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Dashboard</span>
       </a>
 
-      <a mat-list-item routerLink="/reservations" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/hotel-grid"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
+        <mat-icon matListItemIcon>calendar_view_month</mat-icon>
+        <span matListItemTitle>Hotel Grid</span>
+      </a>
+
+      <a
+        mat-list-item
+        routerLink="/reservations"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>event</mat-icon>
         <span matListItemTitle>Reservations</span>
       </a>
 
-      <a mat-list-item routerLink="/rooms" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/rooms"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>meeting_room</mat-icon>
         <span matListItemTitle>Rooms</span>
       </a>
 
-      <a mat-list-item routerLink="/guests" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/guests"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>people</mat-icon>
         <span matListItemTitle>Guests</span>
       </a>
 
-      <a mat-list-item routerLink="/rates" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/rates"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>sell</mat-icon>
         <span matListItemTitle>Rates</span>
       </a>
 
-      <a mat-list-item routerLink="/prices" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/prices"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>payments</mat-icon>
         <span matListItemTitle>Prices</span>
       </a>
 
-      <a mat-list-item routerLink="/folios" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/folios"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>receipt_long</mat-icon>
         <span matListItemTitle>Folios</span>
       </a>
 
-      <a mat-list-item routerLink="/payments" class="navigation-item">
+      <a
+        mat-list-item
+        routerLink="/payments"
+        class="navigation-item"
+        routerLinkActive="active"
+      >
         <mat-icon matListItemIcon>account_balance_wallet</mat-icon>
         <span matListItemTitle>Payments</span>
       </a>

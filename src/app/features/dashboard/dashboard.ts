@@ -7,7 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
-import { RouterLink } from '@angular/router';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +21,8 @@ import { RouterLink } from '@angular/router';
     MatCardModule,
     MatChipsModule,
     MatDividerModule,
-    RouterLink
+    RouterLink,
+    RouterLinkActive
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'

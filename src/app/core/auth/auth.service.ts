@@ -19,7 +19,7 @@ export class AuthService {
   private readonly tokenKey = 'access_token';
   private readonly apiUrl = 'http://localhost:8080/auth';
 
-  readonly isAuthenticated = signal(this.hasToken());
+  readonly isAuthenticated = signal(this.hasValidToken());
 
   constructor(
     private readonly http: HttpClient,
@@ -45,13 +45,58 @@ export class AuthService {
     this.isAuthenticated.set(true);
   }
 
-  logout(): void {
+  clearToken(): void {
     localStorage.removeItem(this.tokenKey);
     this.isAuthenticated.set(false);
+  }
+
+  logout(): void {
+    this.clearToken();
     this.router.navigate(['/login']);
   }
 
   hasToken(): boolean {
     return !!this.getToken();
+  }
+
+  hasValidToken(): boolean {
+    const token = this.getToken();
+
+    if (!token) {
+      return false;
+    }
+
+    if (this.isTokenExpired(token)) {
+      this.clearToken();
+      return false;
+    }
+
+    return true;
+  }
+
+  isTokenExpired(token: string): boolean {
+    try {
+      const payload = token.split('.')[1];
+
+      if (!payload) {
+        return true;
+      }
+
+      const decodedPayload = JSON.parse(
+        atob(
+          payload
+            .replace(/-/g, '+')
+            .replace(/_/g, '/')
+        )
+      );
+
+      if (!decodedPayload.exp) {
+        return true;
+      }
+
+      return decodedPayload.exp * 1000 <= Date.now();
+    } catch {
+      return true;
+    }
   }
 }
