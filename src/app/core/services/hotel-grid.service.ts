@@ -1,6 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {
+  HttpClient,
+  HttpParams,
+  HttpResponse
+} from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { HotelGrid } from '../models/hotel-grid/hotel-grid.model';
 
 @Injectable({
@@ -20,9 +24,38 @@ export class HotelGridService {
       .set('startDate', startDate)
       .set('endDate', endDate);
 
-    return this.http.get<HotelGrid>(
-      this.apiUrl,
-      { params }
-    );
+    return this.http
+      .get<HotelGrid>(
+        this.apiUrl,
+        {
+          params,
+          observe: 'response'
+        }
+      )
+      .pipe(
+        map(
+          (
+            response: HttpResponse<HotelGrid>
+          ) => {
+            console.log(
+              'HOTEL GRID STATUS:',
+              response.status
+            );
+
+            console.log(
+              'HOTEL GRID BODY:',
+              response.body
+            );
+
+            if (!response.body) {
+              throw new Error(
+                'Hotel grid response body is empty'
+              );
+            }
+
+            return response.body;
+          }
+        )
+      );
   }
 }

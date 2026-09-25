@@ -19,16 +19,23 @@ export class AuthService {
   private readonly tokenKey = 'access_token';
   private readonly apiUrl = 'http://localhost:8080/auth';
 
-  readonly isAuthenticated = signal(this.hasValidToken());
+  readonly isAuthenticated = signal(
+    this.hasValidToken()
+  );
 
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router
   ) {}
 
-  login(request: LoginRequest): Observable<LoginResponse> {
+  login(
+    request: LoginRequest
+  ): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(`${this.apiUrl}/login`, request)
+      .post<LoginResponse>(
+        `${this.apiUrl}/login`,
+        request
+      )
       .pipe(
         tap(response => {
           this.setToken(response.token);
@@ -37,16 +44,25 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    return localStorage.getItem(
+      this.tokenKey
+    );
   }
 
   setToken(token: string): void {
-    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(
+      this.tokenKey,
+      token
+    );
+
     this.isAuthenticated.set(true);
   }
 
   clearToken(): void {
-    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(
+      this.tokenKey
+    );
+
     this.isAuthenticated.set(false);
   }
 
@@ -74,7 +90,9 @@ export class AuthService {
     return true;
   }
 
-  isTokenExpired(token: string): boolean {
+  isTokenExpired(
+    token: string
+  ): boolean {
     try {
       const payload = token.split('.')[1];
 
@@ -82,19 +100,23 @@ export class AuthService {
         return true;
       }
 
-      const decodedPayload = JSON.parse(
-        atob(
-          payload
-            .replace(/-/g, '+')
-            .replace(/_/g, '/')
-        )
-      );
+      const decodedPayload =
+        JSON.parse(
+          atob(
+            payload
+              .replace(/-/g, '+')
+              .replace(/_/g, '/')
+          )
+        );
 
       if (!decodedPayload.exp) {
         return true;
       }
 
-      return decodedPayload.exp * 1000 <= Date.now();
+      return (
+        decodedPayload.exp * 1000 <=
+        Date.now()
+      );
     } catch {
       return true;
     }

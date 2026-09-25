@@ -15,7 +15,7 @@
       <span>—</span>
 
       <span>
-        {{ days[30] | date:'dd MMM yyyy' }}
+        {{ days[days.length - 1] | date:'dd MMM yyyy' }}
       </span>
     </div>
 
@@ -37,18 +37,19 @@
 
     <div class="grid-wrapper">
 
-      <div class="hotel-grid">
+      <div
+        class="hotel-grid"
+        [style.--day-width.px]="dayWidth"
+        [style.--room-column-width.px]="roomColumnWidth"
+      >
 
         <div class="grid-header-row">
 
           <div class="corner-cell">
-            ROOM
+            <span>ROOM</span>
           </div>
 
-          @for (
-              day of days;
-            track day.getTime()
-            ) {
+          @for (day of days; track day.getTime()) {
 
             <div
               class="day-header"
@@ -73,10 +74,7 @@
 
         </div>
 
-        @for (
-            room of rooms;
-          track room.id
-          ) {
+        @for (room of rooms; track room.id) {
 
           <div class="room-row">
 
@@ -86,59 +84,75 @@
                 {{ room.roomNumber }}
               </div>
 
-              <div class="room-category">
-                Category {{ room.categoryId }}
+              <div class="room-info">
+                <span>
+                  Floor {{ room.floor }}
+                </span>
+
+                <span>
+                  Category {{ room.categoryId }}
+                </span>
               </div>
 
             </div>
 
-            @for (
-                day of days;
-              track day.getTime()
-              ) {
+            <div class="room-days">
 
-              <div
-                class="room-day"
-                [class.today]="isToday(day)"
-              ></div>
+              @for (day of days; track day.getTime()) {
 
-            }
+                <div
+                  class="room-day"
+                  [class.today]="isToday(day)"
+                ></div>
 
-            @for (
-                reservation of getReservationsForRoom(room);
-              track reservation.id
-              ) {
+              }
 
-              <div
-                class="reservation"
-                [style.left.px]="
-                  getReservationLeft(reservation)
-                "
-                [style.width.px]="
-                  getReservationWidth(reservation)
-                "
-                [attr.title]="
-                  getReservationLabel(reservation)
-                "
-              >
+              @for (
+                  reservation of getReservationsForRoom(room);
+                track reservation.id
+                ) {
 
-                <div class="reservation-confirmation">
-                  {{ reservation.confirmationNumber }}
+                <div
+                  class="reservation"
+                  [class.reserved]="reservation.status === 'RESERVED'"
+                  [class.confirmed]="reservation.status === 'CONFIRMED'"
+                  [class.checked-in]="reservation.status === 'CHECKED_IN'"
+                  [class.completed]="reservation.status === 'COMPLETED'"
+                  [class.cancelled]="reservation.status === 'CANCELLED'"
+                  [class.no-show]="reservation.status === 'NO_SHOW'"
+                  [style.left.px]="
+                    getReservationLeft(reservation) -
+                    roomColumnWidth
+                  "
+                  [style.width.px]="
+                    getReservationWidth(reservation)
+                  "
+                  [attr.title]="getReservationLabel(reservation)"
+                >
+
+                  <div class="reservation-content">
+
+                    <div class="reservation-confirmation">
+                      {{ reservation.confirmationNumber }}
+                    </div>
+
+                    <div class="reservation-dates">
+                      {{ reservation.checkInDate }}
+                      →
+                      {{ reservation.checkOutDate }}
+                    </div>
+
+                    <div class="reservation-status">
+                      {{ reservation.status }}
+                    </div>
+
+                  </div>
+
                 </div>
 
-                <div class="reservation-dates">
-                  {{ reservation.checkInDate }}
-                  →
-                  {{ reservation.checkOutDate }}
-                </div>
+              }
 
-                <div class="reservation-status">
-                  {{ reservation.status }}
-                </div>
-
-              </div>
-
-            }
+            </div>
 
           </div>
 

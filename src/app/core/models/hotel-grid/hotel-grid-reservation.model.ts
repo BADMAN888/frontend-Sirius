@@ -1,10 +1,9 @@
-import {ReservationStatus} from '../reservation/reservation-status.enum';
-
+import { ReservationStatus } from '../reservation/reservation-status.enum';
 
 export interface HotelGridReservation {
   id: number;
   confirmationNumber: string;
-  checkInDate: string;
-  checkOutDate: string;
+  checkIn: string;
+  checkOut: string;
   status: ReservationStatus;
 }

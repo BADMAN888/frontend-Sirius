@@ -1,5 +1,10 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
 import { HotelGridService } from '../../core/services/hotel-grid.service';
 import { HotelGridRoom } from '../../core/models/hotel-grid/hotel-grid-room.model';
 import { HotelGridReservation } from '../../core/models/hotel-grid/hotel-grid-reservation.model';
@@ -14,6 +19,9 @@ import { HotelGridReservation } from '../../core/models/hotel-grid/hotel-grid-re
 export class HotelGrid implements OnInit {
   private readonly hotelGridService =
     inject(HotelGridService);
+
+  private readonly changeDetectorRef =
+    inject(ChangeDetectorRef);
 
   readonly dayWidth = 92;
   readonly roomColumnWidth = 150;
@@ -50,7 +58,10 @@ export class HotelGrid implements OnInit {
     this.days = Array.from(
       { length: this.numberOfDays },
       (_, index) =>
-        this.addDays(this.gridStart, index)
+        this.addDays(
+          this.gridStart,
+          index
+        )
     );
   }
 
@@ -65,17 +76,22 @@ export class HotelGrid implements OnInit {
       this.formatDate(this.gridEnd);
 
     this.hotelGridService
-      .getGrid(startDate, endDate)
+      .getGrid(
+        startDate,
+        endDate
+      )
       .subscribe({
         next: response => {
-          this.rooms = response.rooms;
+          this.rooms =
+            response?.rooms ?? [];
+
           this.loading = false;
+
+          this.changeDetectorRef.detectChanges();
         },
+
         error: error => {
-          console.error(
-            'Hotel grid error:',
-            error
-          );
+          this.rooms = [];
 
           this.error =
             error?.error?.message ||
@@ -83,6 +99,8 @@ export class HotelGrid implements OnInit {
             `Failed to load hotel grid. HTTP ${error?.status || ''}`;
 
           this.loading = false;
+
+          this.changeDetectorRef.detectChanges();
         }
       });
   }
@@ -90,14 +108,16 @@ export class HotelGrid implements OnInit {
   getReservationsForRoom(
     room: HotelGridRoom
   ): HotelGridReservation[] {
-    return room.reservations;
+    return room.reservations ?? [];
   }
 
   getReservationLeft(
     reservation: HotelGridReservation
   ): number {
     const checkIn =
-      this.parseDate(reservation.checkInDate);
+      this.parseDate(
+        reservation.checkInDate
+      );
 
     const visibleStart =
       checkIn < this.gridStart
@@ -120,10 +140,14 @@ export class HotelGrid implements OnInit {
     reservation: HotelGridReservation
   ): number {
     const checkIn =
-      this.parseDate(reservation.checkInDate);
+      this.parseDate(
+        reservation.checkInDate
+      );
 
     const checkOut =
-      this.parseDate(reservation.checkOutDate);
+      this.parseDate(
+        reservation.checkOutDate
+      );
 
     const visibleStart =
       checkIn < this.gridStart
@@ -143,7 +167,8 @@ export class HotelGrid implements OnInit {
 
     return Math.max(
       this.dayWidth - 6,
-      visibleNights * this.dayWidth - 6
+      visibleNights *
+      this.dayWidth - 6
     );
   }
 
@@ -165,6 +190,7 @@ export class HotelGrid implements OnInit {
     days: number
   ): Date {
     const result = new Date(date);
+
     result.setDate(
       result.getDate() + days
     );
