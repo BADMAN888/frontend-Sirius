@@ -6,4 +6,7 @@ export interface HotelGridReservation {
   checkIn: string;
   checkOut: string;
   status: ReservationStatus;
+  guestFirstName: string;
+  guestLastName: string;
+  guestPhone: string;
 }

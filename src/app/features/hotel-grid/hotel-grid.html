@@ -85,13 +85,13 @@
               </div>
 
               <div class="room-info">
-                <span>
-                  Floor {{ room.floor }}
-                </span>
+  <span>
+    Floor {{ room.floor }}
+  </span>
 
                 <span>
-                  Category {{ room.categoryId }}
-                </span>
+    {{ room.categoryName }}
+  </span>
               </div>
 
             </div>
@@ -107,10 +107,8 @@
 
               }
 
-              @for (
-                  reservation of getReservationsForRoom(room);
-                track reservation.id
-                ) {
+              @for (reservation of getReservationsForRoom(room);
+                track reservation.id) {
 
                 <div
                   class="reservation"
@@ -132,14 +130,19 @@
 
                   <div class="reservation-content">
 
-                    <div class="reservation-confirmation">
-                      {{ reservation.confirmationNumber }}
+                    <div class="reservation-guest">
+                      {{ reservation.guestLastName }}
+                      {{ reservation.guestFirstName }}
+                    </div>
+
+                    <div class="reservation-phone">
+                      {{ reservation.guestPhone }}
                     </div>
 
                     <div class="reservation-dates">
-                      {{ reservation.checkInDate }}
+                      {{ formatReservationDate(reservation.checkIn) }}
                       →
-                      {{ reservation.checkOutDate }}
+                      {{ formatReservationDate(reservation.checkOut) }}
                     </div>
 
                     <div class="reservation-status">

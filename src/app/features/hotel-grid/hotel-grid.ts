@@ -17,11 +17,8 @@ import { HotelGridReservation } from '../../core/models/hotel-grid/hotel-grid-re
   styleUrl: './hotel-grid.scss'
 })
 export class HotelGrid implements OnInit {
-  private readonly hotelGridService =
-    inject(HotelGridService);
-
-  private readonly changeDetectorRef =
-    inject(ChangeDetectorRef);
+  private readonly hotelGridService = inject(HotelGridService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   readonly dayWidth = 92;
   readonly roomColumnWidth = 150;
@@ -69,27 +66,17 @@ export class HotelGrid implements OnInit {
     this.loading = true;
     this.error = '';
 
-    const startDate =
-      this.formatDate(this.gridStart);
-
-    const endDate =
-      this.formatDate(this.gridEnd);
+    const startDate = this.formatDate(this.gridStart);
+    const endDate = this.formatDate(this.gridEnd);
 
     this.hotelGridService
-      .getGrid(
-        startDate,
-        endDate
-      )
+      .getGrid(startDate, endDate)
       .subscribe({
         next: response => {
-          this.rooms =
-            response?.rooms ?? [];
-
+          this.rooms = response.rooms ?? [];
           this.loading = false;
-
           this.changeDetectorRef.detectChanges();
         },
-
         error: error => {
           this.rooms = [];
 
@@ -99,7 +86,6 @@ export class HotelGrid implements OnInit {
             `Failed to load hotel grid. HTTP ${error?.status || ''}`;
 
           this.loading = false;
-
           this.changeDetectorRef.detectChanges();
         }
       });
@@ -114,21 +100,17 @@ export class HotelGrid implements OnInit {
   getReservationLeft(
     reservation: HotelGridReservation
   ): number {
-    const checkIn =
-      this.parseDate(
-        reservation.checkInDate
-      );
+    const checkIn = this.parseDateTime(reservation.checkIn);
 
     const visibleStart =
       checkIn < this.gridStart
         ? this.gridStart
         : checkIn;
 
-    const offset =
-      this.getDaysBetween(
-        this.gridStart,
-        visibleStart
-      );
+    const offset = this.getDaysBetween(
+      this.gridStart,
+      visibleStart
+    );
 
     return (
       this.roomColumnWidth +
@@ -139,15 +121,8 @@ export class HotelGrid implements OnInit {
   getReservationWidth(
     reservation: HotelGridReservation
   ): number {
-    const checkIn =
-      this.parseDate(
-        reservation.checkInDate
-      );
-
-    const checkOut =
-      this.parseDate(
-        reservation.checkOutDate
-      );
+    const checkIn = this.parseDateTime(reservation.checkIn);
+    const checkOut = this.parseDateTime(reservation.checkOut);
 
     const visibleStart =
       checkIn < this.gridStart
@@ -159,16 +134,14 @@ export class HotelGrid implements OnInit {
         ? this.gridEnd
         : checkOut;
 
-    const visibleNights =
-      this.getDaysBetween(
-        visibleStart,
-        visibleEnd
-      );
+    const visibleNights = this.getDaysBetween(
+      visibleStart,
+      visibleEnd
+    );
 
     return Math.max(
       this.dayWidth - 6,
-      visibleNights *
-      this.dayWidth - 6
+      visibleNights * this.dayWidth - 6
     );
   }
 
@@ -176,6 +149,19 @@ export class HotelGrid implements OnInit {
     reservation: HotelGridReservation
   ): string {
     return `${reservation.confirmationNumber} · ${reservation.status}`;
+  }
+
+  formatReservationDate(
+    value: string
+  ): string {
+    const date = this.parseDateTime(value);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}.${month} ${hours}:${minutes}`;
   }
 
   isToday(day: Date): boolean {
@@ -220,40 +206,52 @@ export class HotelGrid implements OnInit {
     );
   }
 
-  private parseDate(
+  private parseDateTime(
     value: string
   ): Date {
+    const [
+      datePart,
+      timePart = '00:00:00'
+    ] = value.split('T');
+
     const [
       year,
       month,
       day
-    ] = value
-      .substring(0, 10)
+    ] = datePart
       .split('-')
+      .map(Number);
+
+    const [
+      hours,
+      minutes,
+      seconds
+    ] = timePart
+      .split(':')
       .map(Number);
 
     return new Date(
       year,
       month - 1,
-      day
+      day,
+      hours,
+      minutes,
+      seconds || 0
     );
   }
 
   private formatDate(
     date: Date
   ): string {
-    const year =
-      date.getFullYear();
+    const year = date.getFullYear();
 
-    const month =
-      String(
-        date.getMonth() + 1
-      ).padStart(2, '0');
+    const month = String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
 
-    const day =
-      String(
-        date.getDate()
-      ).padStart(2, '0');
+    const day = String(
+      date.getDate()
+    ).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   }
