@@ -20,6 +20,12 @@ export const routes: Routes = [
       import('./features/hotel-grid/hotel-grid').then(m => m.HotelGrid)
   },
   {
+    path: 'reservations',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/reservations/reservations').then(m => m.Reservations)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

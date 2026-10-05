@@ -58,4 +58,32 @@ export class ReservationService {
       `${this.apiUrl}/${id}`
     );
   }
+
+  cancel(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${id}/cancel`,
+      {}
+    );
+  }
+
+  checkIn(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${id}/check-in`,
+      {}
+    );
+  }
+
+  checkOut(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${id}/check-out`,
+      {}
+    );
+  }
+
+  noShow(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${id}/no-show`,
+      {}
+    );
+  }
 }
