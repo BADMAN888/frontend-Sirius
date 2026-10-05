@@ -26,6 +26,13 @@ export const routes: Routes = [
       import('./features/reservations/reservations').then(m => m.Reservations)
   },
   {
+    path: 'reservations/check-in',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/reservations/check-in/check-in')
+        .then(m => m.CheckIn)
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'

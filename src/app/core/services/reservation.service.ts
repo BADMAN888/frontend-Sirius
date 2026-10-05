@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Reservation } from '../models/reservation/reservation.model';
 import { ReservationRequest } from '../models/reservation/reservation-request.model';
+import { ReservationCheckIn } from '../models/reservation/reservation-check-in.model';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,17 @@ export class ReservationService {
         params: {
           startDate,
           endDate
+        }
+      }
+    );
+  }
+
+  getCheckIns(date: string): Observable<ReservationCheckIn[]> {
+    return this.http.get<ReservationCheckIn[]>(
+      `${this.apiUrl}/check-in`,
+      {
+        params: {
+          date
         }
       }
     );
