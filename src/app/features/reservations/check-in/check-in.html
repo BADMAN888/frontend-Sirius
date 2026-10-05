@@ -1,0 +1,200 @@
+<div class="check-in-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Check-in</h1>
+      <p>Guests arriving on the selected date</p>
+    </div>
+
+    <div class="date-selector">
+
+      <label for="check-in-date">
+        Check-in date
+      </label>
+
+      <input
+        id="check-in-date"
+        type="date"
+        [value]="selectedDate"
+        (change)="onDateChange($event)"
+      >
+
+    </div>
+
+  </div>
+
+  @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+  }
+
+  @if (loading) {
+
+    <div class="state-message">
+      Loading check-ins...
+    </div>
+
+  } @else if (reservations.length === 0) {
+
+    <div class="empty-state">
+
+      <div class="empty-icon">
+        ✓
+      </div>
+
+      <h2>No arrivals</h2>
+
+      <p>
+        There are no reservations scheduled for check-in
+        on {{ selectedDate }}.
+      </p>
+
+    </div>
+
+  } @else {
+
+    <div class="summary">
+
+      <div class="summary-card">
+        <span class="summary-label">
+          Arrivals
+        </span>
+
+        <strong>
+          {{ reservations.length }}
+        </strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">
+          Pending
+        </span>
+
+        <strong>
+          {{ reservations.length }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+        <tr>
+          <th>Room</th>
+          <th>Confirmation</th>
+          <th>Check-in</th>
+          <th>Check-out</th>
+          <th>Status</th>
+          <th>Comments</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (reservation of reservations; track reservation.id) {
+
+            <tr>
+
+              <td>
+                <span class="room-number">
+                  {{ getRoomNumber(reservation.roomId) }}
+                </span>
+              </td>
+
+              <td>
+                <span class="confirmation">
+                  {{ reservation.confirmationNumber }}
+                </span>
+              </td>
+
+              <td>
+                <div class="date-cell">
+                  <strong>
+                    {{ reservation.checkIn | date:'dd.MM.yyyy' }}
+                  </strong>
+
+                  <span>
+                    {{ formatTime(reservation.checkIn) }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <div class="date-cell">
+                  <strong>
+                    {{ reservation.checkOut | date:'dd.MM.yyyy' }}
+                  </strong>
+
+                  <span>
+                    {{ formatTime(reservation.checkOut) }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+
+                <span
+                  class="status"
+                  [class.reserved]="reservation.status === 'RESERVED'"
+                  [class.confirmed]="reservation.status === 'CONFIRMED'"
+                  [class.checked-in]="reservation.status === 'CHECKED_IN'"
+                >
+                  {{ reservation.status }}
+                </span>
+
+              </td>
+
+              <td>
+                <span class="comments">
+                  {{ getCommentText(reservation) }}
+                </span>
+              </td>
+
+              <td>
+                <span class="amount">
+                  {{ reservation.folio.totalAmount | number:'1.2-2' }}
+                  ₴
+                </span>
+              </td>
+
+              <td class="actions">
+
+                <button
+                  type="button"
+                  class="check-in-button"
+                  [disabled]="checkingInId !== null"
+                  (click)="checkIn(reservation)"
+                >
+
+                  @if (checkingInId === reservation.id) {
+                    Checking in...
+                  } @else {
+                    Check In
+                  }
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>

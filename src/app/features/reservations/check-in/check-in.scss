@@ -1,0 +1,271 @@
+.check-in-page {
+  min-height: 100%;
+  padding: 32px;
+  color: #e8eef7;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #8190a8;
+    font-size: 14px;
+  }
+}
+
+.date-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  label {
+    color: #8190a8;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  input {
+    min-width: 180px;
+    padding: 11px 14px;
+    border: 1px solid #243653;
+    border-radius: 8px;
+    outline: none;
+    background: #101c30;
+    color: #e8eef7;
+    font: inherit;
+
+    &:focus {
+      border-color: #3d78c8;
+    }
+  }
+}
+
+.summary {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  min-width: 150px;
+  padding: 18px 20px;
+  border: 1px solid #1e304d;
+  border-radius: 10px;
+  background: #101c30;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .summary-label {
+    color: #8190a8;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  strong {
+    font-size: 26px;
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #1e304d;
+  border-radius: 12px;
+  background: #0d1829;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1100px;
+}
+
+thead {
+  background: #111f34;
+}
+
+th {
+  padding: 15px 16px;
+  border-bottom: 1px solid #243653;
+  color: #8190a8;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #192a42;
+  vertical-align: middle;
+}
+
+tbody tr {
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #111f34;
+  }
+
+  &:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.room-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: #172a47;
+  color: #dbe8f8;
+  font-weight: 700;
+}
+
+.confirmation {
+  color: #7fb2ef;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    color: #e8eef7;
+    font-size: 13px;
+  }
+
+  span {
+    color: #8190a8;
+    font-size: 12px;
+  }
+}
+
+.status {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+
+  &.reserved {
+    background: #29344b;
+    color: #b9c5d8;
+  }
+
+  &.confirmed {
+    background: #18385d;
+    color: #76b1f0;
+  }
+
+  &.checked-in {
+    background: #183f37;
+    color: #67d3b3;
+  }
+}
+
+.comments {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  color: #9aa8bd;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amount {
+  color: #e8eef7;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.actions {
+  text-align: right;
+}
+
+.check-in-button {
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 7px;
+  background: #245fa4;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: #2d70bd;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.state-message,
+.empty-state,
+.error-message {
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+.state-message {
+  color: #8190a8;
+}
+
+.empty-state {
+  margin-top: 20px;
+  border: 1px solid #1e304d;
+  background: #0d1829;
+
+  .empty-icon {
+    margin-bottom: 12px;
+    color: #5fc5a5;
+    font-size: 28px;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+    color: #8190a8;
+    font-size: 14px;
+  }
+}
+
+.error-message {
+  margin-bottom: 20px;
+  border: 1px solid #63343b;
+  background: #2b1820;
+  color: #e58b98;
+}
