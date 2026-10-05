@@ -8,37 +8,43 @@ export const routes: Routes = [
       import('./features/auth/login/login').then(m => m.Login)
   },
   {
-    path: 'dashboard',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/dashboard/dashboard').then(m => m.Dashboard)
-  },
-  {
-    path: 'hotel-grid',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/hotel-grid/hotel-grid').then(m => m.HotelGrid)
-  },
-  {
-    path: 'reservations',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/reservations/reservations').then(m => m.Reservations)
-  },
-  {
-    path: 'reservations/check-in',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/reservations/check-in/check-in')
-        .then(m => m.CheckIn)
-  },
-  {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./shared/layout/main-layout').then(m => m.MainLayout),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard').then(m => m.Dashboard)
+      },
+      {
+        path: 'hotel-grid',
+        loadComponent: () =>
+          import('./features/hotel-grid/hotel-grid').then(m => m.HotelGrid)
+      },
+      {
+        path: 'reservations/check-in',
+        loadComponent: () =>
+          import('./features/reservations/check-in/check-in')
+            .then(m => m.CheckIn)
+      },
+      {
+        path: 'reservations/check-out',
+        loadComponent: () =>
+          import('./features/reservations/check-out/check-out')
+            .then(m => m.CheckOut)
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
   },
   {
     path: '**',
     redirectTo: 'dashboard'
   }
 ];
+
