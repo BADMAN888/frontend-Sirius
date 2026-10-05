@@ -11,29 +11,37 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./shared/layout/main-layout').then(m => m.MainLayout),
+      import('./shared/layout/main-layout/main-layout').then(
+        m => m.MainLayout
+      ),
     children: [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/dashboard/dashboard').then(m => m.Dashboard)
+          import('./features/dashboard/dashboard').then(
+            m => m.Dashboard
+          )
       },
       {
         path: 'hotel-grid',
         loadComponent: () =>
-          import('./features/hotel-grid/hotel-grid').then(m => m.HotelGrid)
+          import('./features/hotel-grid/hotel-grid').then(
+            m => m.HotelGrid
+          )
       },
       {
         path: 'reservations/check-in',
         loadComponent: () =>
-          import('./features/reservations/check-in/check-in')
-            .then(m => m.CheckIn)
+          import('./features/reservations/check-in/check-in').then(
+            m => m.CheckIn
+          )
       },
       {
         path: 'reservations/check-out',
         loadComponent: () =>
-          import('./features/reservations/check-out/check-out')
-            .then(m => m.CheckOut)
+          import('./features/reservations/check-out/check-out').then(
+            m => m.CheckOut
+          )
       },
       {
         path: '',
