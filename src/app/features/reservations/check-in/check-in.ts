@@ -1,17 +1,19 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { Subject, switchMap } from 'rxjs';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { ReservationCheckIn } from '../../../core/models/reservation/reservation-check-in.model';
 
 @Component({
   selector: 'app-check-in',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, DecimalPipe],
   templateUrl: './check-in.html',
   styleUrl: './check-in.scss'
 })
 export class CheckIn implements OnInit {
   private readonly reservationService = inject(ReservationService);
+  private readonly dateChange$ = new Subject<string>();
 
   reservations: ReservationCheckIn[] = [];
 
@@ -23,15 +25,15 @@ export class CheckIn implements OnInit {
   checkingInId: number | null = null;
 
   ngOnInit(): void {
-    this.loadCheckIns();
-  }
+    this.dateChange$
+      .pipe(
+        switchMap(date => {
+          this.loading = true;
+          this.error = '';
 
-  loadCheckIns(): void {
-    this.loading = true;
-    this.error = '';
-
-    this.reservationService
-      .getCheckIns(this.selectedDate)
+          return this.reservationService.getCheckIns(date);
+        })
+      )
       .subscribe({
         next: reservations => {
           this.reservations = reservations;
@@ -47,6 +49,8 @@ export class CheckIn implements OnInit {
             `Failed to load check-ins. HTTP ${error?.status || ''}`;
         }
       });
+
+    this.dateChange$.next(this.selectedDate);
   }
 
   onDateChange(event: Event): void {
@@ -54,7 +58,7 @@ export class CheckIn implements OnInit {
 
     this.selectedDate = input.value;
 
-    this.loadCheckIns();
+    this.dateChange$.next(this.selectedDate);
   }
 
   checkIn(reservation: ReservationCheckIn): void {
@@ -70,7 +74,7 @@ export class CheckIn implements OnInit {
       .subscribe({
         next: () => {
           this.checkingInId = null;
-          this.loadCheckIns();
+          this.dateChange$.next(this.selectedDate);
         },
         error: error => {
           this.checkingInId = null;
@@ -84,36 +88,14 @@ export class CheckIn implements OnInit {
   }
 
   formatTime(value: string): string {
-    const date = new Date(value);
-
-    return date.toLocaleTimeString(
-      'uk-UA',
-      {
-        hour: '2-digit',
-        minute: '2-digit'
-      }
-    );
-  }
-
-  formatDateTime(value: string): string {
-    const date = new Date(value);
-
-    return date.toLocaleString(
-      'uk-UA',
-      {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }
-    );
+    return new Date(value).toLocaleTimeString('uk-UA', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   getCommentText(reservation: ReservationCheckIn): string {
-    return reservation.comments
-      ?.map(comment => comment.text)
-      .join(', ') || '—';
+    return reservation.comments?.map(comment => comment.text).join(', ') || '—';
   }
 
   getRoomNumber(roomId: number): string {
@@ -122,15 +104,10 @@ export class CheckIn implements OnInit {
 
   private formatDate(date: Date): string {
     const year = date.getFullYear();
-
-    const month = String(
-      date.getMonth() + 1
-    ).padStart(2, '0');
-
-    const day = String(
-      date.getDate()
-    ).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   }
 }
+

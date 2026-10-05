@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Reservation } from '../models/reservation/reservation.model';
 import { ReservationRequest } from '../models/reservation/reservation-request.model';
 import { ReservationCheckIn } from '../models/reservation/reservation-check-in.model';
+import { ReservationCheckOut } from '../models/reservation/reservation-check-out.model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,17 @@ export class ReservationService {
   getCheckIns(date: string): Observable<ReservationCheckIn[]> {
     return this.http.get<ReservationCheckIn[]>(
       `${this.apiUrl}/check-in`,
+      {
+        params: {
+          date
+        }
+      }
+    );
+  }
+
+  getCheckOuts(date: string): Observable<ReservationCheckOut[]> {
+    return this.http.get<ReservationCheckOut[]>(
+      `${this.apiUrl}/check-out`,
       {
         params: {
           date

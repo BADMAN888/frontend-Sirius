@@ -269,3 +269,18 @@ tbody tr {
   background: #2b1820;
   color: #e58b98;
 }
+.guest-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    color: #f1f5f9;
+    font-weight: 600;
+  }
+
+  span {
+    color: #94a3b8;
+    font-size: 13px;
+  }
+}

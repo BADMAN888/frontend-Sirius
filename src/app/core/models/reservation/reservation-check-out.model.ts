@@ -1,7 +1,7 @@
 import { ReservationComment } from './reservation-comment.model';
 import { ReservationStatus } from './reservation-status.enum';
 
-export interface ReservationCheckIn {
+export interface ReservationCheckOut {
   id: number;
   confirmationNumber: string;
   roomId: number;
