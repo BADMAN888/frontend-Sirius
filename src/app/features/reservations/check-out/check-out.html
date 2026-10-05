@@ -1,0 +1,223 @@
+<div class="check-out-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Check-out</h1>
+      <p>Guests departing on the selected date</p>
+    </div>
+
+    <div class="date-selector">
+
+      <label for="check-out-date">
+        Check-out date
+      </label>
+
+      <input
+        id="check-out-date"
+        type="date"
+        [value]="selectedDate"
+        (change)="onDateChange($event)"
+      >
+
+    </div>
+
+  </div>
+
+  @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+  }
+
+  @if (loading) {
+
+    <div class="state-message">
+      Loading check-outs...
+    </div>
+
+  } @else if (reservations.length === 0) {
+
+    <div class="empty-state">
+
+      <div class="empty-icon">
+        ✓
+      </div>
+
+      <h2>No departures</h2>
+
+      <p>
+        There are no reservations scheduled for check-out
+        on {{ selectedDate }}.
+      </p>
+
+    </div>
+
+  } @else {
+
+    <div class="summary">
+
+      <div class="summary-card">
+        <span class="summary-label">
+          Departures
+        </span>
+
+        <strong>
+          {{ reservations.length }}
+        </strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">
+          Pending
+        </span>
+
+        <strong>
+          {{ reservations.length }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+
+        <tr>
+          <th>Room</th>
+          <th>Guest</th>
+          <th>Confirmation</th>
+          <th>Check-in</th>
+          <th>Check-out</th>
+          <th>Status</th>
+          <th>Comments</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (reservation of reservations; track reservation.id) {
+
+            <tr>
+
+              <td>
+                <span class="room-number">
+                  {{ getRoomNumber(reservation.roomId) }}
+                </span>
+              </td>
+
+              <td>
+                <div class="guest-name">
+
+                  <strong>
+                    {{ reservation.guestLastName }}
+                    {{ reservation.guestFirstName }}
+                  </strong>
+
+                  @if (reservation.guestMiddleName) {
+                    <span>
+                      {{ reservation.guestMiddleName }}
+                    </span>
+                  }
+
+                </div>
+              </td>
+
+              <td>
+                <span class="confirmation">
+                  {{ reservation.confirmationNumber }}
+                </span>
+              </td>
+
+              <td>
+                <div class="date-cell">
+
+                  <strong>
+                    {{ reservation.checkIn | date:'dd.MM.yyyy' }}
+                  </strong>
+
+                  <span>
+                    {{ formatTime(reservation.checkIn) }}
+                  </span>
+
+                </div>
+              </td>
+
+              <td>
+                <div class="date-cell">
+
+                  <strong>
+                    {{ reservation.checkOut | date:'dd.MM.yyyy' }}
+                  </strong>
+
+                  <span>
+                    {{ formatTime(reservation.checkOut) }}
+                  </span>
+
+                </div>
+              </td>
+
+              <td>
+
+                <span
+                  class="status"
+                  [class.reserved]="reservation.status === 'RESERVED'"
+                  [class.confirmed]="reservation.status === 'CONFIRMED'"
+                  [class.checked-in]="reservation.status === 'CHECKED_IN'"
+                  [class.completed]="reservation.status === 'COMPLETED'"
+                >
+                  {{ reservation.status }}
+                </span>
+
+              </td>
+
+              <td>
+                <span class="comments">
+                  {{ getCommentText(reservation) }}
+                </span>
+              </td>
+
+              <td>
+                <span class="amount">
+                  {{ reservation.totalAmount | number:'1.2-2' }}
+                  ₴
+                </span>
+              </td>
+
+              <td class="actions">
+
+                <button
+                  type="button"
+                  class="check-out-button"
+                  [disabled]="checkingOutId !== null"
+                  (click)="checkOut(reservation)"
+                >
+
+                  @if (checkingOutId === reservation.id) {
+                    Checking out...
+                  } @else {
+                    Check Out
+                  }
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+</div>
