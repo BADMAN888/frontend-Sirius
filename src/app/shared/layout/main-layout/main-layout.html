@@ -1,0 +1,36 @@
+<mat-sidenav-container class="layout">
+  <mat-sidenav mode="side" opened class="sidebar">
+    <div class="brand">
+      <mat-icon>hotel</mat-icon>
+      <span>HMS Sirius</span></div>
+    <mat-divider></mat-divider>
+    <nav class="navigation"><a mat-button routerLink="/dashboard" routerLinkActive="active"
+                               [routerLinkActiveOptions]="{ exact: true }" class="navigation-item">
+      <mat-icon>dashboard</mat-icon>
+      <span>Головна</span> </a> <a mat-button routerLink="/hotel-grid" routerLinkActive="active"
+                                   class="navigation-item">
+      <mat-icon>calendar_view_month</mat-icon>
+      <span>Шахматка</span> </a> <a mat-button routerLink="/reservations/check-in" routerLinkActive="active"
+                                    class="navigation-item">
+      <mat-icon>login</mat-icon>
+      <span>Заїзди</span> </a> <a mat-button routerLink="/reservations/check-out" routerLinkActive="active"
+                                  class="navigation-item">
+      <mat-icon>logout</mat-icon>
+      <span>Виїзди</span> </a></nav>
+    <div class="sidebar-footer">
+      <button mat-button type="button" class="logout-button" (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Вийти</span></button>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar class="toolbar"><span class="toolbar-title"> HMS Sirius </span> <span class="toolbar-spacer"></span>
+      <button mat-icon-button type="button">
+        <mat-icon>notifications</mat-icon>
+      </button>
+    </mat-toolbar>
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

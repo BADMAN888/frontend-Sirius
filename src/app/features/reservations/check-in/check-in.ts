@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { Subject, switchMap } from 'rxjs';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { finalize } from 'rxjs';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { ReservationCheckIn } from '../../../core/models/reservation/reservation-check-in.model';
 
@@ -13,76 +13,78 @@ import { ReservationCheckIn } from '../../../core/models/reservation/reservation
 })
 export class CheckIn implements OnInit {
   private readonly reservationService = inject(ReservationService);
-  private readonly dateChange$ = new Subject<string>();
 
-  reservations: ReservationCheckIn[] = [];
+  readonly reservations = signal<ReservationCheckIn[]>([]);
+  readonly selectedDate = signal(this.formatDate(new Date()));
+  readonly loading = signal(false);
+  readonly error = signal('');
 
-  selectedDate = this.formatDate(new Date());
-
-  loading = false;
-  error = '';
-
-  checkingInId: number | null = null;
+  checkingInId = signal<number | null>(null);
 
   ngOnInit(): void {
-    this.dateChange$
-      .pipe(
-        switchMap(date => {
-          this.loading = true;
-          this.error = '';
-
-          return this.reservationService.getCheckIns(date);
-        })
-      )
-      .subscribe({
-        next: reservations => {
-          this.reservations = reservations;
-          this.loading = false;
-        },
-        error: error => {
-          this.reservations = [];
-          this.loading = false;
-
-          this.error =
-            error?.error?.message ||
-            error?.message ||
-            `Failed to load check-ins. HTTP ${error?.status || ''}`;
-        }
-      });
-
-    this.dateChange$.next(this.selectedDate);
+    this.loadCheckIns();
   }
 
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    this.selectedDate = input.value;
+    this.selectedDate.set(input.value);
 
-    this.dateChange$.next(this.selectedDate);
+    this.loadCheckIns();
+  }
+
+  private loadCheckIns(): void {
+    this.loading.set(true);
+    this.error.set('');
+
+    this.reservationService
+      .getCheckIns(this.selectedDate())
+      .pipe(
+        finalize(() => {
+          this.loading.set(false);
+        })
+      )
+      .subscribe({
+        next: reservations => {
+          this.reservations.set(reservations);
+        },
+        error: error => {
+          this.reservations.set([]);
+
+          this.error.set(
+            error?.error?.message ||
+            error?.message ||
+            `Failed to load check-ins. HTTP ${error?.status || ''}`
+          );
+        }
+      });
   }
 
   checkIn(reservation: ReservationCheckIn): void {
-    if (this.checkingInId !== null) {
+    if (this.checkingInId() !== null) {
       return;
     }
 
-    this.checkingInId = reservation.id;
-    this.error = '';
+    this.checkingInId.set(reservation.id);
+    this.error.set('');
 
     this.reservationService
       .checkIn(reservation.id)
+      .pipe(
+        finalize(() => {
+          this.checkingInId.set(null);
+        })
+      )
       .subscribe({
         next: () => {
-          this.checkingInId = null;
-          this.dateChange$.next(this.selectedDate);
+          this.loadCheckIns();
         },
         error: error => {
-          this.checkingInId = null;
-
-          this.error =
+          this.error.set(
             error?.error?.message ||
             error?.message ||
-            `Failed to check in reservation. HTTP ${error?.status || ''}`;
+            `Failed to check in reservation. HTTP ${error?.status || ''}`
+          );
         }
       });
   }
@@ -110,4 +112,3 @@ export class CheckIn implements OnInit {
     return `${year}-${month}-${day}`;
   }
 }
-

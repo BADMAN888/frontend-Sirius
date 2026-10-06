@@ -11,23 +11,23 @@
       <input
         id="check-in-date"
         type="date"
-        [value]="selectedDate"
+        [value]="selectedDate()"
         (change)="onDateChange($event)"
       >
     </div>
   </div>
 
-  @if (error) {
+  @if (error()) {
     <div class="error-message">
-      {{ error }}
+      {{ error() }}
     </div>
   }
 
-  @if (loading) {
+  @if (loading()) {
     <div class="state-message">
       Loading check-ins...
     </div>
-  } @else if (reservations.length === 0) {
+  } @else if (reservations().length === 0) {
     <div class="empty-state">
       <div class="empty-icon">✓</div>
 
@@ -35,19 +35,19 @@
 
       <p>
         There are no reservations scheduled for check-in
-        on {{ selectedDate }}.
+        on {{ selectedDate() }}.
       </p>
     </div>
   } @else {
     <div class="summary">
       <div class="summary-card">
         <span class="summary-label">Arrivals</span>
-        <strong>{{ reservations.length }}</strong>
+        <strong>{{ reservations().length }}</strong>
       </div>
 
       <div class="summary-card">
         <span class="summary-label">Pending</span>
-        <strong>{{ reservations.length }}</strong>
+        <strong>{{ reservations().length }}</strong>
       </div>
     </div>
 
@@ -68,7 +68,7 @@
         </thead>
 
         <tbody>
-          @for (reservation of reservations; track reservation.id) {
+          @for (reservation of reservations(); track reservation.id) {
             <tr>
               <td>
                 <span class="room-number">
@@ -142,10 +142,10 @@
                 <button
                   type="button"
                   class="check-in-button"
-                  [disabled]="checkingInId !== null"
+                  [disabled]="checkingInId() !== null"
                   (click)="checkIn(reservation)"
                 >
-                  @if (checkingInId === reservation.id) {
+                  @if (checkingInId() === reservation.id) {
                     Checking in...
                   } @else {
                     Check In
@@ -159,4 +159,3 @@
     </div>
   }
 </div>
-
