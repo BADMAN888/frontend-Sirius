@@ -3,8 +3,8 @@ export interface ReservationRequest {
   rateId: number;
   primaryGuestId: number;
   guestIds: number[];
-  checkInDate: string;
-  checkOutDate: string;
+  checkIn: string;
+  checkOut: string;
   adults: number;
   children: number;
 }
