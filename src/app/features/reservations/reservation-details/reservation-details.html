@@ -69,50 +69,36 @@
               }
             </select>
           </div>
-        } @else {
-          <div class="guest-profile">
-            <div class="guest-avatar">
-              {{ reservation.primaryGuest.firstName.charAt(0) }}{{ reservation.primaryGuest.lastName.charAt(0) }}
-            </div>
-
-            <div>
-              <h3>{{ getGuestName() }}</h3>
-              <p>{{ reservation.primaryGuest.phoneNumber }}</p>
-              <p>{{ reservation.primaryGuest.email }}</p>
-            </div>
-          </div>
-
-          <div class="details-list">
-            <div class="detail-row">
-              <span>Address</span>
-              <strong>{{ reservation.primaryGuest.address || '—' }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Gender</span>
-              <strong>{{ reservation.primaryGuest.gender || '—' }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Document</span>
-              <strong>{{ getGuestDocument() }}</strong>
-            </div>
-          </div>
         }
 
-        @if (editMode()) {
-          <div class="guest-profile">
-            <div class="guest-avatar">
-              {{ reservation.primaryGuest.firstName.charAt(0) }}{{ reservation.primaryGuest.lastName.charAt(0) }}
-            </div>
-
-            <div>
-              <h3>{{ getGuestName() }}</h3>
-              <p>{{ reservation.primaryGuest.phoneNumber }}</p>
-              <p>{{ reservation.primaryGuest.email }}</p>
-            </div>
+        <div class="guest-profile">
+          <div class="guest-avatar">
+            {{ reservation.primaryGuest.firstName.charAt(0) }}{{ reservation.primaryGuest.lastName.charAt(0) }}
           </div>
-        }
+
+          <div>
+            <h3>{{ getGuestName() }}</h3>
+            <p>{{ reservation.primaryGuest.phoneNumber }}</p>
+            <p>{{ reservation.primaryGuest.email }}</p>
+          </div>
+        </div>
+
+        <div class="details-list">
+          <div class="detail-row">
+            <span>Address</span>
+            <strong>{{ reservation.primaryGuest.address || '—' }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Gender</span>
+            <strong>{{ reservation.primaryGuest.gender || '—' }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Document</span>
+            <strong>{{ getGuestDocument() }}</strong>
+          </div>
+        </div>
       </section>
 
       <section class="card">
@@ -160,6 +146,11 @@
           <div class="detail-row">
             <span>Room view</span>
             <strong>{{ reservation.room.roomView }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Room status</span>
+            <strong>{{ reservation.room.status }}</strong>
           </div>
         </div>
 
@@ -267,6 +258,11 @@
             <span>Description</span>
             <strong>{{ reservation.rate.description || '—' }}</strong>
           </div>
+
+          <div class="detail-row">
+            <span>Active</span>
+            <strong>{{ reservation.rate.active ? 'Yes' : 'No' }}</strong>
+          </div>
         </div>
       </section>
 
@@ -312,6 +308,20 @@
           <div class="detail-row">
             <span>Folio ID</span>
             <strong>{{ reservation.folioId }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Check-in</span>
+            <strong>
+              {{ reservation.checkIn | date:'dd.MM.yyyy HH:mm' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Check-out</span>
+            <strong>
+              {{ reservation.checkOut | date:'dd.MM.yyyy HH:mm' }}
+            </strong>
           </div>
 
           <div class="detail-row">

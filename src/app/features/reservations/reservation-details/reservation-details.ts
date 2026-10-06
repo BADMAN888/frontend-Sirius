@@ -2,15 +2,15 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { Reservation } from '../../../core/models/reservation/reservation.model';
-import { ReservationRequest } from '../../../core/models/reservation/reservation-request.model';
-import { Profile } from '../../../core/models/reservation/profile.model';
-import { Room } from '../../../core/models/hotel/room.model';
 import { Rate } from '../../../core/models/billing/rate.model';
-import { ReservationService } from '../../../core/services/reservation.service';
+import { Room } from '../../../core/models/hotel/room.model';
+import { Profile } from '../../../core/models/reservation/profile.model';
+import { ReservationRequest } from '../../../core/models/reservation/reservation-request.model';
+import { Reservation } from '../../../core/models/reservation/reservation.model';
 import { ProfileService } from '../../../core/services/profile.service';
-import { RoomService } from '../../../core/services/room.service';
 import { RateService } from '../../../core/services/rate.service';
+import { ReservationService } from '../../../core/services/reservation.service';
+import { RoomService } from '../../../core/services/room.service';
 
 @Component({
   selector: 'app-reservation-details',
@@ -224,6 +224,16 @@ export class ReservationDetails implements OnInit {
       .join(' ');
   }
 
+  getProfileName(profile: Profile): string {
+    return [
+      profile.lastName,
+      profile.firstName,
+      profile.middleName
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
   getGuestDocument(): string {
     const document = this.reservation()?.primaryGuest?.guestDocument;
 
@@ -241,40 +251,6 @@ export class ReservationDetails implements OnInit {
       .join(' ');
   }
 
-  getComments(): string {
-    const comments = this.reservation()?.comments;
-
-    if (!comments?.length) {
-      return 'No comments';
-    }
-
-    return comments
-      .map(comment => comment.text)
-      .join(', ');
-  }
-
-  getRoomName(): string {
-    return this.reservation()?.room?.roomNumber || '—';
-  }
-
-  getRateName(): string {
-    return this.reservation()?.rate?.name || '—';
-  }
-
-  getRatePrice(): string {
-    const rate = this.reservation()?.rate;
-
-    if (!rate) {
-      return '—';
-    }
-
-    return `${rate.price} ${rate.currency}`;
-  }
-
-  getCategoryId(): number | null {
-    return this.reservation()?.room?.categoryId ?? null;
-  }
-
   private toDateTimeLocal(value: string): string {
     return value ? value.slice(0, 16) : '';
   }
@@ -283,14 +259,5 @@ export class ReservationDetails implements OnInit {
     return value.length === 16
       ? `${value}:00`
       : value;
-  }
-  getProfileName(profile: Profile): string {
-    return [
-      profile.lastName,
-      profile.firstName,
-      profile.middleName
-    ]
-      .filter(Boolean)
-      .join(' ');
   }
 }
