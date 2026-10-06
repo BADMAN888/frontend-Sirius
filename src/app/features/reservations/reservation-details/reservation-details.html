@@ -23,7 +23,9 @@
         <div class="title-row">
           <div>
             <h1>Reservation Details</h1>
-            <p>Confirmation #{{ reservation.confirmationNumber }}</p>
+            <p>
+              Confirmation #{{ reservation.confirmationNumber }}
+            </p>
           </div>
 
           <span
@@ -53,24 +55,48 @@
             <h2>Guest</h2>
           </div>
 
-          @if (editMode()) {
-            <div class="form-group">
-              <label for="primaryGuest">Primary guest</label>
+          <div class="form-group">
+            <label for="primaryGuest">
+              Primary guest
+            </label>
 
-              <select
-                id="primaryGuest"
-                [value]="editPrimaryGuestId()"
-                (change)="editPrimaryGuestId.set(+$any($event.target).value)"
-              >
-                @for (profile of profiles(); track profile.id) {
-                  <option [value]="profile.id">
-                    {{ getProfileName(profile) }}
-                    — {{ profile.phoneNumber }}
-                  </option>
-                }
-              </select>
-            </div>
-          }
+            <select
+              id="primaryGuest"
+              [value]="editPrimaryGuestId()"
+              [disabled]="!canEdit() || loadingEditData()"
+              (change)="editPrimaryGuestId.set(+$any($event.target).value)"
+            >
+              @for (profile of profiles(); track profile.id) {
+                <option [value]="profile.id">
+                  {{ getProfileName(profile) }}
+                  — {{ profile.phoneNumber }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="guestIds">
+              Guests
+            </label>
+
+            <select
+              id="guestIds"
+              multiple
+              [disabled]="!canEdit() || loadingEditData()"
+              (change)="onGuestIdsChange($event)"
+            >
+              @for (profile of profiles(); track profile.id) {
+                <option
+                  [value]="profile.id"
+                  [selected]="editGuestIds().includes(profile.id)"
+                >
+                  {{ getProfileName(profile) }}
+                  — {{ profile.phoneNumber }}
+                </option>
+              }
+            </select>
+          </div>
 
           <div class="guest-profile">
             <div class="guest-avatar">
@@ -78,26 +104,40 @@
             </div>
 
             <div>
-              <h3>{{ getGuestName() }}</h3>
-              <p>{{ reservation.primaryGuest.phoneNumber }}</p>
-              <p>{{ reservation.primaryGuest.email }}</p>
+              <h3>
+                {{ getProfileName(reservation.primaryGuest) }}
+              </h3>
+
+              <p>
+                {{ reservation.primaryGuest.phoneNumber }}
+              </p>
+
+              <p>
+                {{ reservation.primaryGuest.email }}
+              </p>
             </div>
           </div>
 
           <div class="details-list">
             <div class="detail-row">
               <span>Address</span>
-              <strong>{{ reservation.primaryGuest.address || '—' }}</strong>
+              <strong>
+                {{ reservation.primaryGuest.address || '—' }}
+              </strong>
             </div>
 
             <div class="detail-row">
               <span>Gender</span>
-              <strong>{{ reservation.primaryGuest.gender || '—' }}</strong>
+              <strong>
+                {{ reservation.primaryGuest.gender || '—' }}
+              </strong>
             </div>
 
             <div class="detail-row">
               <span>Document</span>
-              <strong>{{ getGuestDocument() }}</strong>
+              <strong>
+                {{ getGuestDocument() }}
+              </strong>
             </div>
           </div>
         </section>
@@ -107,79 +147,78 @@
             <h2>Stay</h2>
           </div>
 
-          @if (editMode()) {
-            <div class="form-group">
-              <label for="room">Room</label>
+          <div class="form-group">
+            <label for="room">
+              Room
+            </label>
 
-              <select
-                id="room"
-                [value]="editRoomId()"
-                (change)="editRoomId.set(+$any($event.target).value)"
-              >
-                @for (roomOption of rooms(); track roomOption.id) {
-                  <option [value]="roomOption.id">
-                    Room {{ roomOption.roomNumber }}
-                    — Floor {{ roomOption.floor }}
-                  </option>
-                }
-              </select>
-            </div>
-          } @else {
-            <div class="details-list">
-              <div class="detail-row">
-                <span>Room</span>
-                <strong>{{ reservation.room.roomNumber }}</strong>
-              </div>
-            </div>
-          }
-
-          <div class="details-list">
-            <div class="detail-row">
-              <span>Category ID</span>
-              <strong>{{ reservation.room.categoryId }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Floor</span>
-              <strong>{{ reservation.room.floor }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Room view</span>
-              <strong>{{ reservation.room.roomView }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Room status</span>
-              <strong>{{ reservation.room.status }}</strong>
-            </div>
+            <select
+              id="room"
+              [value]="editRoomId()"
+              [disabled]="!canEdit() || loadingEditData()"
+              (change)="editRoomId.set(+$any($event.target).value)"
+            >
+              @for (room of rooms(); track room.id) {
+                <option [value]="room.id">
+                  Room {{ room.roomNumber }}
+                  — Floor {{ room.floor }}
+                </option>
+              }
+            </select>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="adults">Adults</label>
+              <label for="adults">
+                Adults
+              </label>
 
               <input
                 id="adults"
                 type="number"
                 min="1"
                 [value]="editAdults()"
-                [disabled]="!editMode()"
+                [disabled]="!canEdit()"
                 (input)="editAdults.set(+$any($event.target).value)"
               />
             </div>
 
             <div class="form-group">
-              <label for="children">Children</label>
+              <label for="children">
+                Children
+              </label>
 
               <input
                 id="children"
                 type="number"
                 min="0"
                 [value]="editChildren()"
-                [disabled]="!editMode()"
+                [disabled]="!canEdit()"
                 (input)="editChildren.set(+$any($event.target).value)"
               />
+            </div>
+          </div>
+
+          <div class="details-list">
+            <div class="detail-row">
+              <span>Current category</span>
+              <strong>
+                {{ reservation.room.categoryId }}
+              </strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Current floor</span>
+              <strong>
+                {{ reservation.room.floor }}
+              </strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Room view</span>
+              <strong>
+                {{ reservation.room.roomView }}
+              </strong>
             </div>
           </div>
         </section>
@@ -190,25 +229,29 @@
           </div>
 
           <div class="form-group">
-            <label for="checkIn">Check-in</label>
+            <label for="checkIn">
+              Check-in
+            </label>
 
             <input
               id="checkIn"
               type="datetime-local"
               [value]="editCheckIn()"
-              [disabled]="!editMode()"
+              [disabled]="!canEdit()"
               (input)="editCheckIn.set($any($event.target).value)"
             />
           </div>
 
           <div class="form-group">
-            <label for="checkOut">Check-out</label>
+            <label for="checkOut">
+              Check-out
+            </label>
 
             <input
               id="checkOut"
               type="datetime-local"
               [value]="editCheckOut()"
-              [disabled]="!editMode()"
+              [disabled]="!canEdit()"
               (input)="editCheckOut.set($any($event.target).value)"
             />
           </div>
@@ -219,32 +262,27 @@
             <h2>Rate</h2>
           </div>
 
-          @if (editMode()) {
-            <div class="form-group">
-              <label for="rate">Rate</label>
+          <div class="form-group">
+            <label for="rate">
+              Rate
+            </label>
 
-              <select
-                id="rate"
-                [value]="editRateId()"
-                (change)="editRateId.set(+$any($event.target).value)"
-              >
-                @for (rateOption of rates(); track rateOption.id) {
-                  <option [value]="rateOption.id">
-                    {{ rateOption.name }}
-                    — {{ rateOption.price | number:'1.2-2' }}
-                    {{ rateOption.currency }}
-                  </option>
-                }
-              </select>
-            </div>
-          } @else {
-            <div class="details-list">
-              <div class="detail-row">
-                <span>Rate</span>
-                <strong>{{ reservation.rate.name }}</strong>
-              </div>
-            </div>
-          }
+            <select
+              id="rate"
+              [value]="editRateId()"
+              [disabled]="!canEdit() || loadingEditData()"
+              (change)="editRateId.set(+$any($event.target).value)"
+            >
+              @for (rate of rates(); track rate.id) {
+                <option [value]="rate.id">
+                  {{ rate.name }}
+                  —
+                  {{ rate.price | number:'1.2-2' }}
+                  {{ rate.currency }}
+                </option>
+              }
+            </select>
+          </div>
 
           <div class="details-list">
             <div class="detail-row">
@@ -257,12 +295,32 @@
 
             <div class="detail-row">
               <span>Description</span>
-              <strong>{{ reservation.rate.description || '—' }}</strong>
+              <strong>
+                {{ reservation.rate.description || '—' }}
+              </strong>
             </div>
 
             <div class="detail-row">
               <span>Active</span>
-              <strong>{{ reservation.rate.active ? 'Yes' : 'No' }}</strong>
+              <strong>
+                {{ reservation.rate.active ? 'Yes' : 'No' }}
+              </strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card full-width">
+          <div class="card-header">
+            <h2>Status</h2>
+          </div>
+
+          <div class="details-list">
+            <div class="detail-row">
+              <span>Status</span>
+
+              <strong>
+                {{ reservation.status }}
+              </strong>
             </div>
           </div>
         </section>
@@ -277,6 +335,7 @@
               @for (comment of reservation.comments; track comment.id) {
                 <div class="comment">
                   <p>{{ comment.text }}</p>
+
                   <span>
                     {{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}
                   </span>
@@ -292,36 +351,28 @@
 
         <section class="card full-width">
           <div class="card-header">
-            <h2>Reservation</h2>
+            <h2>Reservation Information</h2>
           </div>
 
           <div class="details-list">
             <div class="detail-row">
               <span>Confirmation number</span>
-              <strong>{{ reservation.confirmationNumber }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Reservation ID</span>
-              <strong>{{ reservation.id }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Folio ID</span>
-              <strong>{{ reservation.folioId }}</strong>
-            </div>
-
-            <div class="detail-row">
-              <span>Check-in</span>
               <strong>
-                {{ reservation.checkIn | date:'dd.MM.yyyy HH:mm' }}
+                {{ reservation.confirmationNumber }}
               </strong>
             </div>
 
             <div class="detail-row">
-              <span>Check-out</span>
+              <span>Reservation ID</span>
               <strong>
-                {{ reservation.checkOut | date:'dd.MM.yyyy HH:mm' }}
+                {{ reservation.id }}
+              </strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Folio ID</span>
+              <strong>
+                {{ reservation.folioId }}
               </strong>
             </div>
 
@@ -348,46 +399,24 @@
         </div>
       }
 
-      @if (editMode()) {
-        <div class="save-bar">
-          <button
-            class="save-button"
-            type="button"
-            [disabled]="saving()"
-            (click)="save()"
-          >
-            @if (saving()) {
-              Saving...
-            } @else {
-              Save
-            }
-          </button>
-
-          <button
-            class="cancel-button"
-            type="button"
-            [disabled]="saving()"
-            (click)="cancelEdit()"
-          >
-            Cancel
-          </button>
-        </div>
-      } @else if (canEdit()) {
-        <div class="save-bar">
-          <button
-            class="save-button"
-            type="button"
-            [disabled]="loadingEditData()"
-            (click)="startEdit()"
-          >
-            @if (loadingEditData()) {
-              Loading...
-            } @else {
-              Edit
-            }
-          </button>
-        </div>
-      }
+      <div class="save-bar">
+        <button
+          class="save-button"
+          type="button"
+          [disabled]="
+            saving() ||
+            loadingEditData() ||
+            !canEdit()
+          "
+          (click)="save()"
+        >
+          @if (saving()) {
+            Saving...
+          } @else {
+            Save
+          }
+        </button>
+      </div>
 
     }
   }

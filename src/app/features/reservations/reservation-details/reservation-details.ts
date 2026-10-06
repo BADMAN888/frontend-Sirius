@@ -33,18 +33,17 @@ export class ReservationDetails implements OnInit {
   readonly rooms = signal<Room[]>([]);
   readonly rates = signal<Rate[]>([]);
 
-  readonly editMode = signal(false);
-
   readonly editRoomId = signal(0);
   readonly editRateId = signal(0);
   readonly editPrimaryGuestId = signal(0);
+  readonly editGuestIds = signal<number[]>([]);
   readonly editCheckIn = signal('');
   readonly editCheckOut = signal('');
   readonly editAdults = signal(1);
   readonly editChildren = signal(0);
 
   readonly loading = signal(true);
-  readonly loadingEditData = signal(false);
+  readonly loadingEditData = signal(true);
   readonly saving = signal(false);
   readonly saved = signal(false);
 
@@ -57,10 +56,12 @@ export class ReservationDetails implements OnInit {
     if (!id) {
       this.error.set('Invalid reservation ID.');
       this.loading.set(false);
+      this.loadingEditData.set(false);
       return;
     }
 
     this.loadReservation(id);
+    this.loadEditData();
   }
 
   private loadReservation(id: number): void {
@@ -86,20 +87,6 @@ export class ReservationDetails implements OnInit {
     });
   }
 
-  startEdit(): void {
-    const reservation = this.reservation();
-
-    if (!reservation || !this.canEdit() || this.loadingEditData()) {
-      return;
-    }
-
-    this.saveError.set('');
-    this.saved.set(false);
-
-    this.initializeForm(reservation);
-    this.loadEditData();
-  }
-
   private loadEditData(): void {
     this.loadingEditData.set(true);
 
@@ -112,8 +99,6 @@ export class ReservationDetails implements OnInit {
         this.profiles.set(data.profiles);
         this.rooms.set(data.rooms);
         this.rates.set(data.rates);
-
-        this.editMode.set(true);
         this.loadingEditData.set(false);
       },
       error: error => {
@@ -121,28 +106,21 @@ export class ReservationDetails implements OnInit {
         this.saveError.set(
           error?.error?.message ||
           error?.message ||
-          `Failed to load edit data. HTTP ${error?.status || ''}`
+          `Failed to load reservation data. HTTP ${error?.status || ''}`
         );
       }
     });
   }
 
-  cancelEdit(): void {
-    const reservation = this.reservation();
-
-    if (reservation) {
-      this.initializeForm(reservation);
-    }
-
-    this.editMode.set(false);
-    this.saveError.set('');
-    this.saved.set(false);
-  }
-
   save(): void {
     const reservation = this.reservation();
 
-    if (!reservation || !this.canEdit() || this.saving()) {
+    if (
+      !reservation ||
+      !this.canEdit() ||
+      this.saving() ||
+      this.loadingEditData()
+    ) {
       return;
     }
 
@@ -152,7 +130,7 @@ export class ReservationDetails implements OnInit {
 
     const guestIds = Array.from(
       new Set([
-        ...reservation.guestIds,
+        ...this.editGuestIds(),
         this.editPrimaryGuestId()
       ])
     );
@@ -168,14 +146,15 @@ export class ReservationDetails implements OnInit {
       children: this.editChildren()
     };
 
-    this.reservationService.update(reservation.id, request).subscribe({
+    this.reservationService.update(
+      reservation.id,
+      request
+    ).subscribe({
       next: updatedReservation => {
         this.reservation.set(updatedReservation);
         this.initializeForm(updatedReservation);
-
         this.saving.set(false);
         this.saved.set(true);
-        this.editMode.set(false);
       },
       error: error => {
         this.saving.set(false);
@@ -188,12 +167,26 @@ export class ReservationDetails implements OnInit {
     });
   }
 
+  onGuestIdsChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+
+    this.editGuestIds.set(
+      Array.from(select.selectedOptions)
+        .map(option => Number(option.value))
+    );
+  }
+
   private initializeForm(reservation: Reservation): void {
     this.editRoomId.set(reservation.room.id);
     this.editRateId.set(reservation.rate.id);
     this.editPrimaryGuestId.set(reservation.primaryGuest.id);
-    this.editCheckIn.set(this.toDateTimeLocal(reservation.checkIn));
-    this.editCheckOut.set(this.toDateTimeLocal(reservation.checkOut));
+    this.editGuestIds.set([...reservation.guestIds]);
+    this.editCheckIn.set(
+      this.toDateTimeLocal(reservation.checkIn)
+    );
+    this.editCheckOut.set(
+      this.toDateTimeLocal(reservation.checkOut)
+    );
     this.editAdults.set(reservation.adults);
     this.editChildren.set(reservation.children);
   }
@@ -208,22 +201,6 @@ export class ReservationDetails implements OnInit {
     this.router.navigate(['/reservations/check-in']);
   }
 
-  getGuestName(): string {
-    const guest = this.reservation()?.primaryGuest;
-
-    if (!guest) {
-      return '—';
-    }
-
-    return [
-      guest.lastName,
-      guest.firstName,
-      guest.middleName
-    ]
-      .filter(Boolean)
-      .join(' ');
-  }
-
   getProfileName(profile: Profile): string {
     return [
       profile.lastName,
@@ -235,7 +212,8 @@ export class ReservationDetails implements OnInit {
   }
 
   getGuestDocument(): string {
-    const document = this.reservation()?.primaryGuest?.guestDocument;
+    const document =
+      this.reservation()?.primaryGuest?.guestDocument;
 
     if (!document) {
       return '—';
