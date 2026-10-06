@@ -1,0 +1,341 @@
+<div class="reservation-details-page">
+
+  @if (loading()) {
+
+    <div class="state-message">
+      Loading reservation...
+    </div>
+
+  } @else if (error()) {
+
+    <div class="error-message">
+      {{ error() }}
+    </div>
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      ← Back
+    </button>
+
+  } @else if (reservation()) {
+
+    <div class="page-header">
+
+      <div>
+
+        <button
+          type="button"
+          class="back-button"
+          (click)="goBack()"
+        >
+          ← Back
+        </button>
+
+        <div class="title-row">
+
+          <div>
+            <h1>
+              Reservation
+              #{{ reservation()!.id }}
+            </h1>
+
+            <p>
+              {{ reservation()!.confirmationNumber }}
+            </p>
+          </div>
+
+          <span
+            class="status"
+            [class.reserved]="reservation()!.status === 'RESERVED'"
+            [class.confirmed]="reservation()!.status === 'CONFIRMED'"
+            [class.checked-in]="reservation()!.status === 'CHECKED_IN'"
+            [class.completed]="reservation()!.status === 'COMPLETED'"
+            [class.cancelled]="reservation()!.status === 'CANCELLED'"
+            [class.no-show]="reservation()!.status === 'NO_SHOW'"
+          >
+            {{ reservation()!.status.replace('_', ' ') }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="content-grid">
+
+      <section class="card">
+
+        <div class="card-header">
+          <h2>Guest</h2>
+        </div>
+
+        <div class="guest-profile">
+
+          <div class="guest-avatar">
+            {{ guest()?.firstName?.charAt(0) || '?' }}
+          </div>
+
+          <div>
+
+            <h3>
+              {{ getGuestName() }}
+            </h3>
+
+            <p>
+              {{ guest()?.phoneNumber || 'No phone number' }}
+            </p>
+
+            <p>
+              {{ guest()?.email || 'No email' }}
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="details-list">
+
+          <div class="detail-row">
+            <span>Address</span>
+            <strong>
+              {{ guest()?.address || '—' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Gender</span>
+            <strong>
+              {{ guest()?.gender || '—' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Document</span>
+            <strong>
+              {{ getGuestDocument() }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="card">
+
+        <div class="card-header">
+          <h2>Stay</h2>
+        </div>
+
+        <div class="details-list">
+
+          <div class="detail-row">
+            <span>Room</span>
+            <strong>
+              {{ room()?.roomNumber || reservation()!.roomId }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Category</span>
+            <strong>
+              {{ category()?.name || '—' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Floor</span>
+            <strong>
+              {{ room()?.floor || '—' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Room view</span>
+            <strong>
+              {{ room()?.roomView || '—' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Adults</span>
+            <strong>
+              {{ reservation()!.adults }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Children</span>
+            <strong>
+              {{ reservation()!.children }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="card">
+
+        <div class="card-header">
+          <h2>Dates</h2>
+        </div>
+
+        <div class="stay-dates">
+
+          <div class="date-block">
+            <span>Check-in</span>
+
+            <strong>
+              {{ reservation()!.checkIn | date:'dd MMM yyyy' }}
+            </strong>
+
+            <small>
+              {{ reservation()!.checkIn | date:'HH:mm' }}
+            </small>
+          </div>
+
+          <div class="date-arrow">
+            →
+          </div>
+
+          <div class="date-block">
+            <span>Check-out</span>
+
+            <strong>
+              {{ reservation()!.checkOut | date:'dd MMM yyyy' }}
+            </strong>
+
+            <small>
+              {{ reservation()!.checkOut | date:'HH:mm' }}
+            </small>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="card">
+
+        <div class="card-header">
+          <h2>Rate</h2>
+        </div>
+
+        <div class="details-list">
+
+          <div class="detail-row">
+            <span>Rate</span>
+            <strong>
+              {{ rate()?.name || '—' }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Price</span>
+            <strong>
+              @if (rate()) {
+                {{ rate()!.price | number:'1.2-2' }}
+                {{ rate()!.currency }}
+              } @else {
+                —
+              }
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Description</span>
+            <strong>
+              {{ rate()?.description || '—' }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="card full-width">
+
+        <div class="card-header">
+          <h2>Comments</h2>
+        </div>
+
+        <div class="comments">
+
+          @if (reservation()!.comments.length) {
+
+            @for (comment of reservation()!.comments; track comment.id) {
+
+              <div class="comment">
+
+                <p>
+                  {{ comment.text }}
+                </p>
+
+                <span>
+                  {{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}
+                </span>
+
+              </div>
+
+            }
+
+          } @else {
+
+            <div class="empty-comments">
+              No comments
+            </div>
+
+          }
+
+        </div>
+
+      </section>
+
+      <section class="card">
+
+        <div class="card-header">
+          <h2>Reservation</h2>
+        </div>
+
+        <div class="details-list">
+
+          <div class="detail-row">
+            <span>Confirmation</span>
+            <strong>
+              {{ reservation()!.confirmationNumber }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Reservation ID</span>
+            <strong>
+              #{{ reservation()!.id }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Folio ID</span>
+            <strong>
+              #{{ reservation()!.folioId }}
+            </strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Created</span>
+            <strong>
+              {{ reservation()!.createdAt | date:'dd.MM.yyyy HH:mm' }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  }
+
+</div>

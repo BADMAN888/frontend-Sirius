@@ -69,7 +69,10 @@
 
         <tbody>
           @for (reservation of reservations(); track reservation.id) {
-            <tr>
+            <tr
+              class="reservation-row"
+              (click)="openReservation(reservation.id)"
+            >
               <td>
                 <span class="room-number">
                   {{ getRoomNumber(reservation.roomId) }}
@@ -143,7 +146,7 @@
                   type="button"
                   class="check-in-button"
                   [disabled]="checkingInId() !== null"
-                  (click)="checkIn(reservation)"
+                  (click)="$event.stopPropagation(); checkIn(reservation)"
                 >
                   @if (checkingInId() === reservation.id) {
                     Checking in...

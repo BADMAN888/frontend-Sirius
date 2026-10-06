@@ -1,0 +1,282 @@
+.reservation-details-page {
+  padding: 28px;
+  color: #e6edf7;
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.back-button {
+  border: 0;
+  background: transparent;
+  color: #8ba9c9;
+  padding: 0;
+  margin-bottom: 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: #ffffff;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.title-row h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.title-row p {
+  margin: 0;
+  color: #7890ad;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 13px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.status.reserved {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.status.confirmed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.status.checked-in {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+}
+
+.status.completed {
+  background: rgba(20, 184, 166, 0.15);
+  color: #2dd4bf;
+}
+
+.status.cancelled {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.status.no-show {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: #0b1b2d;
+  border: 1px solid #17314d;
+  border-radius: 10px;
+  padding: 22px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.card-header {
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.guest-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #17314d;
+}
+
+.guest-avatar {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #163b63;
+  color: #8fc4ff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.guest-profile h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.guest-profile p {
+  margin: 2px 0;
+  color: #7890ad;
+  font-size: 13px;
+}
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 13px 0;
+  border-bottom: 1px solid #122940;
+}
+
+.detail-row:last-child {
+  border-bottom: 0;
+}
+
+.detail-row span {
+  color: #7890ad;
+  font-size: 13px;
+}
+
+.detail-row strong {
+  color: #e6edf7;
+  font-size: 13px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.stay-dates {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+  padding: 10px 0;
+}
+
+.date-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.date-block span {
+  color: #7890ad;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.date-block strong {
+  color: #f1f5f9;
+  font-size: 18px;
+}
+
+.date-block small {
+  color: #8ba9c9;
+  font-size: 13px;
+}
+
+.date-arrow {
+  color: #4d7198;
+  font-size: 24px;
+}
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment {
+  padding: 14px;
+  background: #081624;
+  border: 1px solid #122940;
+  border-radius: 7px;
+}
+
+.comment p {
+  margin: 0 0 8px;
+  color: #d7e2ef;
+  font-size: 14px;
+}
+
+.comment span {
+  color: #6f88a4;
+  font-size: 12px;
+}
+
+.empty-comments {
+  color: #6f88a4;
+  font-size: 14px;
+}
+
+.state-message,
+.error-message {
+  padding: 40px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.state-message {
+  color: #8ba9c9;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .reservation-details-page {
+    padding: 18px;
+  }
+
+  .title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .stay-dates {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .date-arrow {
+    transform: rotate(90deg);
+  }
+}

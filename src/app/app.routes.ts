@@ -5,7 +5,9 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./features/auth/login/login').then(m => m.Login)
+      import('./features/auth/login/login').then(
+        m => m.Login
+      )
   },
   {
     path: '',
@@ -44,6 +46,13 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'reservations/:id',
+        loadComponent: () =>
+          import('./features/reservations/reservation-details/reservation-details').then(
+            m => m.ReservationDetails
+          )
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
@@ -55,4 +64,3 @@ export const routes: Routes = [
     redirectTo: 'dashboard'
   }
 ];
-

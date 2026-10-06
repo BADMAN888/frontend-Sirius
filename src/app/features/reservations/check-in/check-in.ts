@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { ReservationCheckIn } from '../../../core/models/reservation/reservation-check-in.model';
@@ -13,6 +14,7 @@ import { ReservationCheckIn } from '../../../core/models/reservation/reservation
 })
 export class CheckIn implements OnInit {
   private readonly reservationService = inject(ReservationService);
+  private readonly router = inject(Router);
 
   readonly reservations = signal<ReservationCheckIn[]>([]);
   readonly selectedDate = signal(this.formatDate(new Date()));
@@ -31,6 +33,10 @@ export class CheckIn implements OnInit {
     this.selectedDate.set(input.value);
 
     this.loadCheckIns();
+  }
+
+  openReservation(id: number): void {
+    this.router.navigate(['/reservations', id]);
   }
 
   private loadCheckIns(): void {
